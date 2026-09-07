@@ -1,0 +1,20 @@
+{
+    "user_parameters": {
+        "schema": "mario",
+        "num_entities": 14,
+        "num_triples": 119,
+        "relation_balance_ratio": 0.5,
+        "prop_untyped_entities": 0.0,
+        "avg_depth_specific_class": 1.0,
+        "multityping": false,
+        "avg_multityping": 1.0
+    },
+    "statistics": {
+        "num_entities": 14,
+        "num_instantiated_relations": 5,
+        "num_triples": 119,
+        "prop_untyped_entities": 0.0,
+        "avg_depth_specific_class": 1.0,
+        "avg_multityping": 1.0
+    }
+}

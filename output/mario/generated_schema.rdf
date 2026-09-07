@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated schema from PyGraft. Entity and relation names were rewriten by hand to 
+easilly compare with custom made schema. -->
+<rdf:RDF
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+   <!-- Ontology --> 
+  <rdf:Description rdf:about="http://pygraf.t/">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <dcterms:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/>
+  </rdf:Description>
+
+  <!-- Classes -->
+  <rdf:Description rdf:about="http://pygraf.t/C2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/C1">
+    <!--Pygraft works with a minimum of 2 classes, so a second class is created, never
+    referenced by another entity or relation.-->
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://pygraf.t/C2"/>
+  </rdf:Description>
+
+  <!-- Relations -->
+  <rdf:Description rdf:about="http://pygraf.t/servantOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/enemyOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/bortherOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </rdf:Description>
+  
+  <rdf:Description rdf:about="http://pygraf.t/allyOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/loves">
+    <!--Despite prop_subproperties: 0.0, the generated schema has loves rdfs:subPropertyOf allyOf. 
+    PyGraft's subproperty-pairing loop only checks whether it's hit its 0% target after 
+    attempting one pairing, so the first two relations that happen to share an identical
+    OWL-characteristic pattern (4 of our 5 relations are just "irreflexive," nothing else)
+    get paired regardless. There's no config knob to prevent it.-->
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://pygraf.t/allyOf"/>
+  </rdf:Description>
+</rdf:RDF>

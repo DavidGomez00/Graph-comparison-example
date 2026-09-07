@@ -1,0 +1,74 @@
+{
+    "statistics": {
+        "num_relations": 5,
+        "prop_reflexive": 0.0,
+        "prop_irreflexive": 1.0,
+        "prop_functional": 0.0,
+        "prop_inversefunctional": 0.0,
+        "prop_symmetric": 0.2,
+        "prop_asymmetric": 0.0,
+        "prop_transitive": 0.0,
+        "prop_inverseof": 0.0,
+        "prop_subpropertyof": 0.0,
+        "prop_profiled_relations": 1.0,
+        "relation_specificity": 1.0
+    },
+    "relations": [
+        "allyOf",
+        "brotherOf",
+        "enemyOf",
+        "loves",
+        "servantOf"
+    ],
+    "rel2patterns": {
+        "allyOf": [
+            "owl:Irreflexive"
+        ],
+        "brotherOf": [
+            "owl:Irreflexive",
+            "owl:Symmetric"
+        ],
+        "enemyOf": [
+            "owl:Irreflexive"
+        ],
+        "loves": [
+            "owl:Irreflexive"
+        ],
+        "servantOf": [
+            "owl:Irreflexive"
+        ]
+    },
+    "reflexive_relations": [],
+    "irreflexive_relations": [
+        "allyOf",
+        "brotherOf",
+        "enemyOf",
+        "loves",
+        "servantOf"
+    ],
+    "symmetric_relations": [
+        "brotherOf"
+    ],
+    "asymmetric_relations": [],
+    "functional_relations": [],
+    "inversefunctional_relations": [],
+    "transitive_relations": [],
+    "inverseof_relations": [],
+    "subrelations": [],
+    "rel2inverse": {},
+    "rel2dom": {
+        "allyOf": "Character",
+        "brotherOf": "Character",
+        "enemyOf": "Character",
+        "loves": "Character",
+        "servantOf": "Character"
+    },
+    "rel2range": {
+        "allyOf": "Character",
+        "brotherOf": "Character",
+        "enemyOf": "Character",
+        "loves": "Character",
+        "servantOf": "Character"
+    },
+    "rel2superrel": {}
+}

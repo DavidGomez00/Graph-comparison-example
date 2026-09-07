@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Hand-customized schema based on generated_schema.rdf to represent
+     the Mario graph.
+
+     mario.tsv has 14 `type` triples, one per entity, all pointing to the
+     class `Character` -> modeled below as a class hierarchy, the same way
+     output/FR/schema.rdf models `Person`. -->
+<rdf:RDF
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <!-- Ontology -->
+  <rdf:Description rdf:about="http://pygraf.t/">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <dcterms:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/>
+  </rdf:Description>
+
+  <!-- Classes -->
+  <rdf:Description rdf:about="http://pygraf.t/Character">
+    <!--Every typed entity in mario.tsv is a Character (14/14 `type` triples).
+    This is the only class that is ever instantiated.-->
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/PlaceholderClass">
+    <!--PyGraft requires at least 2 classes to run. This one is never referenced
+    by any relation's domain/range and, with avg_depth_specific_class: 1.0 in
+    the KG config, is never assigned to any instance either.-->
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+
+  <!-- Relations -->
+  <rdf:Description rdf:about="http://pygraf.t/brotherOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/allyOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/enemyOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/servantOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+
+  <rdf:Description rdf:about="http://pygraf.t/loves">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+</rdf:RDF>

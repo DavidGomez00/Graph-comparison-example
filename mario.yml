@@ -1,0 +1,43 @@
+# GENERAL ARGS #
+schema_name: mario
+format: xml
+
+# Not used to (re)generate output/mario/schema.rdf itself -- that file, and
+# its matching class_info.json/relation_info.json, were hand-crafted from
+# .data/mario/mario.tsv (see the comments in schema.rdf). These values just
+# document the characteristics that were encoded by hand.
+
+# SCHEMA ARGS #
+## CLASSES ##
+num_classes: 2
+max_hierarchy_depth: 2
+avg_class_depth: 1
+class_inheritance_ratio: 1.0
+avg_disjointness: 0.0
+verbose: true
+
+## RELATIONS ##
+num_relations: 5
+relation_specificity: 1.0
+prop_profiled_relations: 1.0
+profile_side: both
+prop_symmetric_relations: 0.2
+prop_inverse_relations: 0.0
+prop_transitive_relations: 0.0
+prop_asymmetric_relations: 0.0
+prop_reflexive_relations: 0.0
+prop_irreflexive_relations: 1.0
+prop_functional_relations: 0.0
+prop_inverse_functional_relations: 0.0
+prop_subproperties: 0.0
+
+# KNOWLEDGE GRAPH ARGS ##
+num_entities: 14
+num_triples: 119
+fast_gen: true
+oversample: false
+relation_balance_ratio: 0.5
+prop_untyped_entities: 0.0
+avg_depth_specific_class: 1.0
+multityping: false
+avg_multityping: 1.0
