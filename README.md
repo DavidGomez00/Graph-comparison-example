@@ -166,7 +166,7 @@ patterns compare equal) are directly comparable between the two graphs.
 reports shared vs. unique patterns, Jaccard similarity, and each side's head
 coverage/confidence/support side by side.
 
-### Findings (see the notebook for full discussion)
+## Findings
 
 - The two graphs are structurally close (same entity count, similar degree
   distributions and clustering), though the real graph's degree distribution
