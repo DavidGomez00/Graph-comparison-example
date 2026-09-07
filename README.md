@@ -35,20 +35,18 @@ that shares its schema?
 ```
 
 `AMIE/` and `pygraft/` are separate upstream projects tracked in this working
-copy as plain directories (not real git submodules — there's no
-`.gitmodules`), and both are git-ignored. They are not part of this repo's
+copy as plain directories (not real git submodules), and both are git-ignored. They are not part of this repo's
 history and are not published with it; see below for how to obtain them.
 
 ## The target graph: "Mario"
 
 [`public_data/mario.tsv`](public_data/mario.tsv) is a small, hand-authored
 knowledge graph: 14 entities (Mario, Luigi, Bowser, Peach, ...), all typed
-`Character`, connected by 119 triples over 5 relations —
-`allyOf`, `enemyOf`, `brotherOf`, `servantOf`, `loves`. It exists purely as a
+`Character`, connected by 119 triples over 5 relations. It exists purely as a
 non-trivial but easy-to-inspect "ground truth" graph to generate a synthetic
 counterpart from and compare against.
 
-## Generating the synthetic graph — `pygraft_generation.ipynb`
+## Generating the synthetic graph
 
 [PyGraft](https://github.com/nicolas-hbt/pygraft) generates a synthetic KG
 from a schema plus a set of numeric parameters (number of entities/triples,
@@ -71,7 +69,7 @@ notebook then parses down to entity-to-entity and `type` triples only, and
 serializes as `pygraft.ttl`/`.tsv`/`.csv` for comparison against
 `mario.tsv`.
 
-## Comparing the graphs — `graph_comparison.ipynb`
+## Comparing the graphs
 
 Takes the paths to any two graph files (RDF or plain `.tsv`/`.csv` triples,
 here the target and synthetic Mario graphs) and compares them on two levels:
@@ -100,7 +98,7 @@ coverage/confidence/support side by side.
 - Logically, the real graph encodes actual rule structure AMIE can recover
   (e.g. a servant is always also counted as an ally) that the synthetic
   graph does not reproduce at all once trivial `type`-inference rules are
-  excluded — PyGraft's schema-driven generation captures relation-level
+  excluded. PyGraft's schema-driven generation captures relation-level
   statistics but not this kind of cross-relation logical dependency.
 
 ## `run_amie.py`
@@ -119,7 +117,7 @@ positive_examples, body_size, pca_body_size, functional_variable`).
 
 Note: AMIE's own defaults (`-mins`/`-minis 100`, `-minhc 0.01`) are tuned for
 large knowledge bases and will silently mine zero rules on a graph this
-small — pass `--mins 1 --minis 1 --minhc 0` (and optionally `--minc 0
+small. Pass `--mins 1 --minis 1 --minhc 0` (and optionally `--minc 0
 --minpca 0`) as shown above. Run `python run_amie.py --help` for all options.
 
 ## Setup
@@ -131,15 +129,13 @@ requirements/environment file in this repo.
 **AMIE3**: `run_amie.py` shells out to a local AMIE3 `.jar` (default:
 `amie3.5.1.jar` next to the script, override with `--jar`). It requires a
 Java runtime on `PATH`. Download AMIE3 from the
-[AMIE repository](https://github.com/dig-team/amie) — `*.jar` files are
+[AMIE repository](https://github.com/dig-team/amie):`*.jar` files are
 git-ignored here and not checked in.
 
 **AMIE/ and pygraft/ directories**: these are vendored, git-ignored copies
 of the two upstream projects' full source (used for reference/local
 development, e.g. `AMIE/inference` scripts and building AMIE from source).
-They aren't required to run the notebooks — only the AMIE3 jar and the
-`pygraft` Python package are — and aren't included when this repo is cloned.
-Obtain them separately from
-[dig-team/amie](https://github.com/dig-team/amie) and
+They aren't required to run the notebooks and aren't included when this repo is cloned.
+Obtain them separately from [dig-team/amie](https://github.com/dig-team/amie) and
 [nicolas-hbt/pygraft](https://github.com/nicolas-hbt/pygraft) if you need
 them.
