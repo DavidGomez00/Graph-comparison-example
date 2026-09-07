@@ -191,4 +191,4 @@ coverage/confidence/support side by side.
   own schema declares.
 
 
-See [getting started.md]('Getting started.md') to run the code yourself.
+See [`getting started.md`](Getting started.md) to run the code yourself.
