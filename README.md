@@ -6,59 +6,20 @@ real-world target graph, and for comparing the two graphs both structurally
 (degree, triangles, clustering) and logically (Horn rules mined with
 [AMIE3](https://github.com/dig-team/amie)).
 
-The guiding question: how well does a schema-driven synthetic KG generator
+**How well does a schema-driven synthetic KG generator
 reproduce the structural and logical properties of a real, hand-curated graph
-that shares its schema?
+that shares its schema?**
 
 Two target graphs are worked through here: a small hand-authored "Mario"
 universe of characters and their relations, and a much larger real-world
-extract of French royalty from DBpedia. Both get the same treatment: a
-PyGraft schema hand-crafted to match the target graph's own classes and
-relations (rather than PyGraft's generic `C1`/`R1` names), then a synthetic
-KG generated from that schema for comparison.
-
-## Repository layout
-
-```
-.
-├── mario.yml                      # PyGraft config for Mario: schema + KG generation parameters
-├── french_royalty.yml             # PyGraft config for French royalty: schema + KG generation parameters
-├── pygraft_generation.ipynb       # Generates the synthetic KG with PyGraft
-├── graph_comparison.ipynb         # Compares target vs. synthetic graph
-├── run_amie.py                    # CLI wrapper: run AMIE3 and export mined rules to CSV
-├── output/mario/                  # Hand-crafted PyGraft schema + PyGraft's generated KG (Mario)
-│   ├── schema.rdf                 #   hand-customized schema (classes/relations named for Mario)
-│   ├── generated_schema.rdf       #   PyGraft's auto-generated schema, kept for reference
-│   ├── class_info.json            #   class hierarchy fed to PyGraft's KG generator
-│   ├── relation_info.json         #   relation characteristics fed to PyGraft's KG generator
-│   ├── kg_info.json               #   PyGraft's report on the KG it generated
-│   └── full_graph.rdf             #   the synthetic KG PyGraft generated (RDF/XML)
-├── output/french_royalty/         # Hand-crafted PyGraft schema + PyGraft's generated KG (French royalty)
-│   ├── schema.rdf                 #   hand-customized schema (classes/relations named for the real data)
-│   ├── generated_schema.rdf       #   PyGraft's auto-generated schema, kept for reference
-│   ├── class_info.json            #   class hierarchy fed to PyGraft's KG generator
-│   ├── relation_info.json         #   relation characteristics fed to PyGraft's KG generator
-│   ├── kg_info.json               #   PyGraft's report on the KG it generated
-│   └── full_graph.rdf             #   the synthetic KG PyGraft generated (RDF/XML)
-├── public_data/                   # Target and synthetic graphs as plain triples, checked in
-│   ├── mario.tsv / mario.csv      #   Mario target graph (hand-authored)
-│   └── pygraft.tsv / pygraft.csv  #   Mario synthetic graph (parsed from output/mario/full_graph.rdf)
-├── .data/mario/                   # Local working copy of the Mario data (git-ignored)
-├── .data/french_royalty/          # Local working copy of the French royalty data (git-ignored)
-│   ├── french_royalty_no_literals.tsv  # target graph: a DBpedia French royalty extract, literals stripped
-│   └── pygraft.tsv / pygraft.csv  #   French royalty synthetic graph (parsed from output/french_royalty/full_graph.rdf)
-├── amie3.5.1.jar                  # AMIE3 jar used by run_amie.py (git-ignored, not checked in)
-├── AMIE/                          # Vendored copy of the AMIE rule-mining engine (git-ignored)
-└── pygraft/                       # Vendored copy of the PyGraft KG generator (git-ignored)
-```
-
-`AMIE/` and `pygraft/` are separate upstream projects tracked in this working
-copy as plain directories (not real git submodules), and both are git-ignored. They are not part of this repo's
-history and are not published with it; see below for how to obtain them.
+extract of French royalty from DBpedia. A PyGraft schema hand-crafted is 
+made to match the target graph's own classes and relations (rather than 
+PyGraft's generic `C1`/`R1` names), then a synthetic KG generated from 
+that schema for comparison.
 
 ## The target graphs
 
-### Mario
+### Super Mario
 
 [`public_data/mario.tsv`](public_data/mario.tsv) is a small, hand-authored
 knowledge graph: 14 entities (Mario, Luigi, Bowser, Peach, ...), all typed
@@ -83,13 +44,11 @@ These are ontology bookkeeping, not instance data, and aren't reproduced.
 ## Generating the synthetic graphs
 
 [PyGraft](https://github.com/nicolas-hbt/pygraft) generates a synthetic KG
-from a schema plus a set of numeric parameters (number of entities/triples,
-relation properties such as symmetry/transitivity, class hierarchy depth,
-etc.). Rather than let PyGraft invent generic class/relation names (`C1`,
-`R1`, ...), each target graph gets a schema hand-customized from PyGraft's
-own auto-generated one, so that the synthetic graph shares the target's real
-class and relation names. This makes the two graphs' relations directly
-comparable (see the rule mining below) without needing any entity alignment.
+from a schema plus a set of numeric parameters. Rather than let PyGraft invent
+generic class/relation names (`C1`, `R1`, ...), each target graph gets a schema 
+hand-customized from PyGraft's own auto-generated one, so that the synthetic
+graph shares the target's real class and relation names. This makes the two 
+graphs' relations directly comparable without needing any entity alignment.
 
 ### Mario schema
 
@@ -101,11 +60,9 @@ from PyGraft's own auto-generated schema
 ([`generated_schema.rdf`](output/mario/generated_schema.rdf)): the one class
 (`Character`) and 5 relations (`brotherOf`, `servantOf`, `allyOf`, `enemyOf`,
 `loves`, all domain/range `Character`) were renamed to their real Mario
-names, `brotherOf` was made symmetric to match the data, and PyGraft's one
-spurious `rdfs:subPropertyOf` (a library artifact, not a real characteristic
-of the data) was dropped. A second, inert `PlaceholderClass` was kept only
-because PyGraft requires at least 2 classes to run; it is never assigned to
-any instance.
+names, `brotherOf` was made symmetric to match the data. A second, inert 
+`PlaceholderClass` was kept only because PyGraft requires at least 2 classes 
+to run; it is never assigned to any instance.
 
 Running PyGraft's KG generator against these files produces
 [`output/mario/full_graph.rdf`](output/mario/full_graph.rdf), which the
@@ -181,21 +138,7 @@ PyGraft's `fast_gen` instance generator only uses these declarations to
 check that the resulting graph is not logically contradictory. It does not
 use them to actually generate matching triples. Each relation's entity
 pairs are sampled independently at random, constrained only by domain,
-range, and the per-relation triple budget from `relation_balance_ratio`. So
-running `run_amie.py` on `.data/french_royalty/pygraft.tsv` at AMIE's
-default thresholds (`-mins 100`, `-minhc 0.01`) mines 0 rules, and that's
-the correct answer given the data: there is nothing above chance for AMIE
-to find. Loosening the thresholds (`--mins 1 --minis 1 --minhc 0`) does
-produce around 60 candidate rules, but every one has `positive_examples: 1`
-and `head_coverage` under 0.002, a single coincidental overlap out of
-thousands of triples, not real structure.
-
-This is the same limitation already noted for Mario below, confirmed here
-with a schema that has four explicit logical relationships to check
-against instead of one: PyGraft's schema-driven generation reproduces
-relation-level statistics (how many triples per relation, which classes
-they connect) but not the cross-relation logical dependencies its own
-schema declares.
+range, and the per-relation triple budget from `relation_balance_ratio`. 
 
 ## Comparing the graphs
 
@@ -234,42 +177,18 @@ coverage/confidence/support side by side.
   graph does not reproduce at all once trivial `type`-inference rules are
   excluded. PyGraft's schema-driven generation captures relation-level
   statistics but not this kind of cross-relation logical dependency.
+- Running `run_amie.py` on `.data/french_royalty/pygraft.tsv` at AMIE's 
+  default thresholds (`-mins 100`, `-minhc 0.01`) mines 0 rules, and that's
+  the correct answer given the data: there is nothing above chance for AMIE
+  to find. Loosening the thresholds (`--mins 1 --minis 1 --minhc 0`) does
+  produce around 60 candidate rules, but every one has `positive_examples: 1`
+  and `head_coverage` under 0.002, a single coincidental overlap out of
+  thousands of triples, not real structure. This is the same limitation already
+  noted for Mario, confirmed here with a schema that has four explicit logical 
+  relationships to check against instead of one: PyGraft's schema-driven 
+  generation reproduces relation-level statistics (how many triples per relation, 
+  which classes they connect) but not the cross-relation logical dependencies its
+  own schema declares.
 
-## `run_amie.py`
 
-A thin CLI wrapper around AMIE3, invoked as a Java subprocess:
-
-```bash
-python run_amie.py public_data/mario.tsv \
-    -o public_data/mario_rules.csv \
-    --mins 1 --minis 1 --minhc 0 --minc 0 --minpca 0
-```
-
-AMIE3's plain-text stdout table is parsed and written out as CSV
-(`rule, body, head, head_coverage, std_confidence, pca_confidence,
-positive_examples, body_size, pca_body_size, functional_variable`).
-
-Note: AMIE's own defaults (`-mins`/`-minis 100`, `-minhc 0.01`) are tuned for
-large knowledge bases and will silently mine zero rules on a graph this
-small. Pass `--mins 1 --minis 1 --minhc 0` (and optionally `--minc 0
---minpca 0`) as shown above. Run `python run_amie.py --help` for all options.
-
-## Setup
-
-**Python dependencies**: `networkx`, `numpy`, `pandas`, `rdflib`, `pygraft`,
-plus Jupyter to run the notebooks. There is currently no pinned
-requirements/environment file in this repo.
-
-**AMIE3**: `run_amie.py` shells out to a local AMIE3 `.jar` (default:
-`amie3.5.1.jar` next to the script, override with `--jar`). It requires a
-Java runtime on `PATH`. Download AMIE3 from the
-[AMIE repository](https://github.com/dig-team/amie):`*.jar` files are
-git-ignored here and not checked in.
-
-**AMIE/ and pygraft/ directories**: these are vendored, git-ignored copies
-of the two upstream projects' full source (used for reference/local
-development, e.g. `AMIE/inference` scripts and building AMIE from source).
-They aren't required to run the notebooks and aren't included when this repo is cloned.
-Obtain them separately from [dig-team/amie](https://github.com/dig-team/amie) and
-[nicolas-hbt/pygraft](https://github.com/nicolas-hbt/pygraft) if you need
-them.
+See [getting started.md]('Getting started.md') to run the code yourself.
