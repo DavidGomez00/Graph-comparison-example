@@ -33,7 +33,7 @@ KG generated from that schema for comparison.
 │   ├── relation_info.json         #   relation characteristics fed to PyGraft's KG generator
 │   ├── kg_info.json               #   PyGraft's report on the KG it generated
 │   └── full_graph.rdf             #   the synthetic KG PyGraft generated (RDF/XML)
-├── output/FR/                     # Hand-crafted PyGraft schema + PyGraft's generated KG (French royalty)
+├── output/french_royalty/         # Hand-crafted PyGraft schema + PyGraft's generated KG (French royalty)
 │   ├── schema.rdf                 #   hand-customized schema (classes/relations named for the real data)
 │   ├── generated_schema.rdf       #   PyGraft's auto-generated schema, kept for reference
 │   ├── class_info.json            #   class hierarchy fed to PyGraft's KG generator
@@ -45,7 +45,8 @@ KG generated from that schema for comparison.
 │   └── pygraft.tsv / pygraft.csv  #   Mario synthetic graph (parsed from output/mario/full_graph.rdf)
 ├── .data/mario/                   # Local working copy of the Mario data (git-ignored)
 ├── .data/french_royalty/          # Local working copy of the French royalty data (git-ignored)
-│   └── french_royalty_no_literals.tsv  # target graph: a DBpedia French royalty extract, literals stripped
+│   ├── french_royalty_no_literals.tsv  # target graph: a DBpedia French royalty extract, literals stripped
+│   └── pygraft.tsv / pygraft.csv  #   French royalty synthetic graph (parsed from output/french_royalty/full_graph.rdf)
 ├── amie3.5.1.jar                  # AMIE3 jar used by run_amie.py (git-ignored, not checked in)
 ├── AMIE/                          # Vendored copy of the AMIE rule-mining engine (git-ignored)
 └── pygraft/                       # Vendored copy of the PyGraft KG generator (git-ignored)
@@ -70,14 +71,14 @@ counterpart from and compare against.
 [`.data/french_royalty/french_royalty_no_literals.tsv`](.data/french_royalty/french_royalty_no_literals.tsv)
 is a real-world extract from DBpedia: 4429 entities, 2212 of them explicitly
 typed `Person` (the rest only ever appear as the subject/object of a
-relation — a completeness artifact of the source extraction, not a modeling
+relation, a completeness artifact of the source extraction, not a modeling
 choice), connected by 6442 relation triples over 8 relations (`child`,
 `parent`, `spouse`, `father`, `mother`, `successor`, `predecessor`,
 `marriedTo`; counts range from 1897 for `child` down to 20 for `marriedTo`).
 The file also carries 10 `rdf:type rdf:Property` declarations for the
 relations themselves (plus two, `name`/`gender`, for literal-valued
-predicates that were stripped when producing the `_no_literals` file) —
-these are ontology bookkeeping, not instance data, and aren't reproduced.
+predicates that were stripped when producing the `_no_literals` file).
+These are ontology bookkeeping, not instance data, and aren't reproduced.
 
 ## Generating the synthetic graphs
 
@@ -87,7 +88,7 @@ relation properties such as symmetry/transitivity, class hierarchy depth,
 etc.). Rather than let PyGraft invent generic class/relation names (`C1`,
 `R1`, ...), each target graph gets a schema hand-customized from PyGraft's
 own auto-generated one, so that the synthetic graph shares the target's real
-class and relation names — making the two graphs' relations directly
+class and relation names. This makes the two graphs' relations directly
 comparable (see the rule mining below) without needing any entity alignment.
 
 ### Mario schema
@@ -115,26 +116,29 @@ serializes as `pygraft.ttl`/`.tsv`/`.csv` for comparison against
 ### French royalty schema
 
 Configured in [`french_royalty.yml`](french_royalty.yml). The schema in
-[`output/FR/schema.rdf`](output/FR/schema.rdf) (and its matching
-[`class_info.json`](output/FR/class_info.json) /
-[`relation_info.json`](output/FR/relation_info.json)) was built the same way
-as Mario's, this time modeling one real class (`Person`, plus the same inert
-`PlaceholderClass`) and the 8 real relations, all domain/range `Person`,
-with characteristics inferred from what the relation names actually mean:
+[`output/french_royalty/schema.rdf`](output/french_royalty/schema.rdf) (and
+its matching
+[`class_info.json`](output/french_royalty/class_info.json) /
+[`relation_info.json`](output/french_royalty/relation_info.json)) was built
+the same way as Mario's, this time modeling one real class (`Person`, plus
+the same inert `PlaceholderClass`) and the 8 real relations, all
+domain/range `Person`, with characteristics inferred from what the relation
+names actually mean:
 
-- `parent` / `child` — inverses of each other (`owl:inverseOf`)
-- `father` / `mother` — `rdfs:subPropertyOf parent`
-- `spouse` — `owl:SymmetricProperty`
-- `marriedTo` — also `owl:SymmetricProperty`, and `rdfs:subPropertyOf spouse`
-  (it's a much rarer synonym in the data: 20 triples vs. spouse's 1152)
-- `successor` / `predecessor` — inverses of each other
+- `parent` / `child`: inverses of each other (`owl:inverseOf`)
+- `father` / `mother`: `rdfs:subPropertyOf parent`
+- `spouse`: `owl:SymmetricProperty`
+- `marriedTo`: also `owl:SymmetricProperty`, and `rdfs:subPropertyOf spouse`
+  (it's a much rarer synonym in the data, 20 triples vs. spouse's 1152)
+- `successor` / `predecessor`: inverses of each other
 
 All 8 are irreflexive. Running PyGraft's KG generator against these files
 (`pygraft.generate_kg("french_royalty.yml")`) produces
-[`output/FR/full_graph.rdf`](output/FR/full_graph.rdf), a logically
-consistent KG with all 4429 entities and all 8 relations represented (not
-yet parsed down to `public_data/`/compared the way Mario's is — see
-`pygraft_generation.ipynb` for that step on Mario).
+[`output/french_royalty/full_graph.rdf`](output/french_royalty/full_graph.rdf),
+a logically consistent KG with all 4429 entities and all 8 relations
+represented. It's parsed down to `.data/french_royalty/pygraft.tsv`/`.ttl`
+the same way Mario's is (see `pygraft_generation.ipynb`), but not yet copied
+to `public_data/` or run through `graph_comparison.ipynb`.
 
 Two aspects of the real data don't survive the round-trip, documented as
 comments in `french_royalty.yml`:
@@ -156,13 +160,52 @@ comments in `french_royalty.yml`:
    lowest value that reliably (0/200 trial runs) keeps all 8 relations
    present, at the cost of a milder imbalance than the real data's.
 
+### The synthetic graph's own schema relationships don't show up in the data
+
+`output/french_royalty/schema.rdf` declares `parent`/`child` and
+`successor`/`predecessor` as inverses, `father`/`mother` as subproperties of
+`parent`, `marriedTo` as a subproperty of `spouse`, and `spouse`/`marriedTo`
+as symmetric. None of these hold in the generated instance data. Checking
+`output/french_royalty/full_graph.rdf` directly, for every entity pair
+`(a, b)`:
+
+```
+parent triples: 542, child triples: 1047, parent(a,b) with matching child(b,a): 0
+successor: 1281, predecessor: 1971, successor(a,b) with matching predecessor(b,a): 0
+father: 1984, parent: 542, father(a,b) also present as parent(a,b): 0
+marriedTo: 1468, spouse: 1432, marriedTo(a,b) also present as spouse(a,b): 0
+spouse: 1432 (declared symmetric), (a,b) with (b,a) also present: 0
+```
+
+PyGraft's `fast_gen` instance generator only uses these declarations to
+check that the resulting graph is not logically contradictory. It does not
+use them to actually generate matching triples. Each relation's entity
+pairs are sampled independently at random, constrained only by domain,
+range, and the per-relation triple budget from `relation_balance_ratio`. So
+running `run_amie.py` on `.data/french_royalty/pygraft.tsv` at AMIE's
+default thresholds (`-mins 100`, `-minhc 0.01`) mines 0 rules, and that's
+the correct answer given the data: there is nothing above chance for AMIE
+to find. Loosening the thresholds (`--mins 1 --minis 1 --minhc 0`) does
+produce around 60 candidate rules, but every one has `positive_examples: 1`
+and `head_coverage` under 0.002, a single coincidental overlap out of
+thousands of triples, not real structure.
+
+This is the same limitation already noted for Mario below, confirmed here
+with a schema that has four explicit logical relationships to check
+against instead of one: PyGraft's schema-driven generation reproduces
+relation-level statistics (how many triples per relation, which classes
+they connect) but not the cross-relation logical dependencies its own
+schema declares.
+
 ## Comparing the graphs
 
 Currently run for Mario only ([`graph_comparison.ipynb`](graph_comparison.ipynb));
-the French royalty synthetic graph is generated (`output/FR/full_graph.rdf`)
-but hasn't been parsed down to `public_data/` or run through this notebook
-yet. Takes the paths to any two graph files (RDF or plain `.tsv`/`.csv`
-triples, here the target and synthetic Mario graphs) and compares them on
+the French royalty synthetic graph is generated
+(`output/french_royalty/full_graph.rdf`) and parsed to
+`.data/french_royalty/pygraft.tsv`, but hasn't been copied to `public_data/`
+or run through this notebook yet. Takes the paths to any two graph files
+(RDF or plain `.tsv`/`.csv` triples, here the target and synthetic Mario
+graphs) and compares them on
 two levels:
 
 **Structural metrics** (`compare_graphs`): in/out-degree (from the raw
