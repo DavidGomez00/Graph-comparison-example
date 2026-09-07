@@ -281,10 +281,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if not rules:
         print(
-            "warning: 0 rules mined. If this is a small graph, AMIE's default "
-            "thresholds (min-support=100, min-initial-support=100) are likely "
-            "too strict -- retry with --mins 1 --minis 1 --minhc 0 (and "
-            "optionally --minc 0 --minpca 0). See why_amie_mines_no_rules.md.",
+            "warning: 0 rules mined.",
             file=sys.stderr,
         )
 

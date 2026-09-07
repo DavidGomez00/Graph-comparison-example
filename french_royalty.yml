@@ -1,5 +1,5 @@
 # GENERAL ARGS #
-schema_name: FR
+schema_name: french_royalty
 format: xml
 
 # Not used to (re)generate output/FR/schema.rdf itself -- that file, and

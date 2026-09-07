@@ -1,6 +1,6 @@
 {
     "user_parameters": {
-        "schema": "FR",
+        "schema": "french_royalty",
         "num_entities": 4429,
         "num_triples": 10871,
         "relation_balance_ratio": 0.7,
