@@ -14,7 +14,7 @@
         "num_instantiated_relations": 5,
         "num_triples": 119,
         "prop_untyped_entities": 0.0,
-        "avg_depth_specific_class": 1.0,
+        "avg_depth_specific_class": 1.0714285714285714,
         "avg_multityping": 1.0
     }
 }

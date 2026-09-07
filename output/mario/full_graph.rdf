@@ -5,164 +5,88 @@
    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
    xmlns:sc="http://pygraf.t/"
 >
-  <rdf:Description rdf:about="http://pygraf.t/loves">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E6">
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E10"/>
-    <sc:loves rdf:resource="http://pygraf.t/E1"/>
-    <sc:enemyOf rdf:resource="http://pygraf.t/E14"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E5"/>
-  </rdf:Description>
   <rdf:Description rdf:about="http://pygraf.t/E11">
-    <sc:allyOf rdf:resource="http://pygraf.t/E4"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E14"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:enemyOf rdf:resource="http://pygraf.t/E7"/>
-    <sc:loves rdf:resource="http://pygraf.t/E6"/>
-    <sc:loves rdf:resource="http://pygraf.t/E4"/>
-    <sc:loves rdf:resource="http://pygraf.t/E7"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E1"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E10">
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E7"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E1"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E8"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E11"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E14"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E1"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E5"/>
-    <sc:loves rdf:resource="http://pygraf.t/E7"/>
-    <sc:loves rdf:resource="http://pygraf.t/E2"/>
-    <sc:loves rdf:resource="http://pygraf.t/E5"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E11"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E12">
-    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E2"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E7"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E11"/>
-    <sc:loves rdf:resource="http://pygraf.t/E9"/>
-    <sc:loves rdf:resource="http://pygraf.t/E10"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E8">
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E13"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E7"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E13"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E11"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E4"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E1"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E2"/>
-    <sc:loves rdf:resource="http://pygraf.t/E11"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E1"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E14"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E13"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E9">
-    <sc:servantOf rdf:resource="http://pygraf.t/E11"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E2"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E6"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:loves rdf:resource="http://pygraf.t/E2"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E3">
     <sc:allyOf rdf:resource="http://pygraf.t/E10"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E6"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:loves rdf:resource="http://pygraf.t/E10"/>
-    <sc:loves rdf:resource="http://pygraf.t/E8"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E7"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E14"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/allyOf">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E14">
+    <sc:allyOf rdf:resource="http://pygraf.t/E5"/>
     <sc:allyOf rdf:resource="http://pygraf.t/E8"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E3"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E13"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E10"/>
     <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:enemyOf rdf:resource="http://pygraf.t/E4"/>
-    <sc:loves rdf:resource="http://pygraf.t/E10"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E11"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/enemyOf">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/PlaceholderClass">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:subClassOf rdf:resource="http://pygraf.t/Character"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E5">
-    <sc:allyOf rdf:resource="http://pygraf.t/E4"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E7"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E4"/>
     <sc:brotherOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E8"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E2"/>
+    <sc:loves rdf:resource="http://pygraf.t/E12"/>
+    <sc:loves rdf:resource="http://pygraf.t/E9"/>
+    <sc:loves rdf:resource="http://pygraf.t/E3"/>
     <sc:servantOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E14"/>
     <sc:servantOf rdf:resource="http://pygraf.t/E10"/>
-    <sc:enemyOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E13"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://pygraf.t/E4">
     <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E14"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E14"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E2"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E1"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E8"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E13"/>
     <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:loves rdf:resource="http://pygraf.t/E1"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E12"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:loves rdf:resource="http://pygraf.t/E5"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E7">
+  <rdf:Description rdf:about="http://pygraf.t/E2">
+    <sc:allyOf rdf:resource="http://pygraf.t/E12"/>
     <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:loves rdf:resource="http://pygraf.t/E4"/>
-    <sc:loves rdf:resource="http://pygraf.t/E14"/>
-    <sc:loves rdf:resource="http://pygraf.t/E3"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E7"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E8"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E12"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E14"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E9"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:loves rdf:resource="http://pygraf.t/E9"/>
+    <sc:loves rdf:resource="http://pygraf.t/E8"/>
+    <sc:loves rdf:resource="http://pygraf.t/E11"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E14">
+    <sc:allyOf rdf:resource="http://pygraf.t/E1"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E9"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E5"/>
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E5"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:loves rdf:resource="http://pygraf.t/E7"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E6">
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E3"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E14"/>
     <sc:servantOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:loves rdf:resource="http://pygraf.t/E13"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E8"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://pygraf.t/E1">
-    <sc:loves rdf:resource="http://pygraf.t/E10"/>
-    <sc:loves rdf:resource="http://pygraf.t/E4"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <rdf:type rdf:resource="http://pygraf.t/PlaceholderClass"/>
     <sc:enemyOf rdf:resource="http://pygraf.t/E13"/>
-    <sc:enemyOf rdf:resource="http://pygraf.t/E12"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E8"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E10"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E3"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E9"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E5"/>
     <sc:brotherOf rdf:resource="http://pygraf.t/E3"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E2"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E13"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E14"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E8"/>
+    <sc:loves rdf:resource="http://pygraf.t/E3"/>
+    <sc:loves rdf:resource="http://pygraf.t/E14"/>
+    <sc:loves rdf:resource="http://pygraf.t/E7"/>
+    <sc:loves rdf:resource="http://pygraf.t/E9"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E4"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E11"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E13">
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E3"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E4"/>
+    <sc:loves rdf:resource="http://pygraf.t/E8"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E4"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://pygraf.t/servantOf">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
@@ -170,33 +94,58 @@
     <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
     <rdfs:range rdf:resource="http://pygraf.t/Character"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E13">
-    <sc:loves rdf:resource="http://pygraf.t/E6"/>
-    <sc:loves rdf:resource="http://pygraf.t/E4"/>
-    <sc:loves rdf:resource="http://pygraf.t/E3"/>
-    <rdf:type rdf:resource="http://pygraf.t/Character"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E2"/>
-    <sc:allyOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E12"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E4"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E8"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E9"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E7"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/E2">
+  <rdf:Description rdf:about="http://pygraf.t/E10">
     <sc:servantOf rdf:resource="http://pygraf.t/E5"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E13"/>
-    <sc:servantOf rdf:resource="http://pygraf.t/E9"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E1"/>
     <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E2"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E3"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E8"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E12"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E2"/>
     <sc:loves rdf:resource="http://pygraf.t/E12"/>
     <sc:loves rdf:resource="http://pygraf.t/E14"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
-    <sc:brotherOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:loves rdf:resource="http://pygraf.t/E7"/>
+    <sc:loves rdf:resource="http://pygraf.t/E5"/>
+    <sc:loves rdf:resource="http://pygraf.t/E6"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://pygraf.t/Character">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdf:Description rdf:about="http://pygraf.t/E3">
+    <sc:loves rdf:resource="http://pygraf.t/E13"/>
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E14"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E7"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E9"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E14"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E2"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E12"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E7"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E7">
+    <sc:loves rdf:resource="http://pygraf.t/E1"/>
+    <sc:loves rdf:resource="http://pygraf.t/E13"/>
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E5"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E4"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E10"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/loves">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E5">
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E4"/>
+    <sc:loves rdf:resource="http://pygraf.t/E4"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E10"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E1"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://pygraf.t/brotherOf">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
@@ -205,8 +154,59 @@
     <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
     <rdfs:range rdf:resource="http://pygraf.t/Character"/>
   </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/enemyOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E9">
+    <sc:servantOf rdf:resource="http://pygraf.t/E8"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E10"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E5"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E11"/>
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E11"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E12"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E14"/>
+    <sc:loves rdf:resource="http://pygraf.t/E7"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E8">
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:servantOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E10"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E4"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E7"/>
+    <sc:loves rdf:resource="http://pygraf.t/E11"/>
+    <sc:loves rdf:resource="http://pygraf.t/E7"/>
+    <sc:enemyOf rdf:resource="http://pygraf.t/E3"/>
+  </rdf:Description>
   <rdf:Description rdf:about="http://pygraf.t/">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
     <dcterms:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/PlaceholderClass">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E12">
+    <sc:allyOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:allyOf rdf:resource="http://pygraf.t/E10"/>
+    <rdf:type rdf:resource="http://pygraf.t/Character"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E13"/>
+    <sc:brotherOf rdf:resource="http://pygraf.t/E6"/>
+    <sc:loves rdf:resource="http://pygraf.t/E3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/allyOf">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Character"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Character"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/Character">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
   </rdf:Description>
 </rdf:RDF>
