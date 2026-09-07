@@ -1,0 +1,66 @@
+# GENERAL ARGS #
+schema_name: FR
+format: xml
+
+# Not used to (re)generate output/FR/schema.rdf itself -- that file, and
+# its matching class_info.json/relation_info.json, were hand-crafted from
+# .data/french_royalty/french_royalty_no_literals.tsv (see the comments in
+# schema.rdf). These values just document the characteristics that were
+# encoded by hand, and drive the KG-generation step (num_entities/num_triples/
+# relation_balance_ratio/prop_untyped_entities below).
+
+# SCHEMA ARGS #
+## CLASSES ##
+num_classes: 2
+max_hierarchy_depth: 2
+avg_class_depth: 1
+class_inheritance_ratio: 1.0
+avg_disjointness: 0.0
+verbose: true
+
+## RELATIONS ##
+num_relations: 8
+relation_specificity: 1.0
+prop_profiled_relations: 1.0
+profile_side: both
+prop_symmetric_relations: 0.25
+prop_inverse_relations: 0.5
+prop_transitive_relations: 0.0
+prop_asymmetric_relations: 0.0
+prop_reflexive_relations: 0.0
+prop_irreflexive_relations: 1.0
+prop_functional_relations: 0.0
+prop_inverse_functional_relations: 0.0
+prop_subproperties: 0.75
+
+# KNOWLEDGE GRAPH ARGS ##
+# french_royalty_no_literals.tsv has 4429 unique entities and 6442 relation
+# triples (child/parent/spouse/father/mother/successor/predecessor/marriedTo).
+#
+# Note on prop_untyped_entities: in the real data only 2212/4429 entities
+# (~50%) carry an explicit `type Person` triple, the rest only ever appear
+# as the subject/object of a relation. 
+# PyGraft can't reproduce that: every relation here has domain=range=Person,
+# and untyped entities are never drawn to fill a relation whose domain/range 
+# is a class they don't have. With
+# prop_untyped_entities > 0 the "untyped" share is just wasted (never appears
+# in the KG at all, typed or not), instead of appearing untyped-but-connected
+# like in the source data. We therefore set it to 0.0 so the full entity pool
+# is usable, at the cost of over-generating `type Person` triples (4429
+# instead of 2212). The final num_triples = 6442 relation + 4429 type = 10871.
+num_entities: 4429
+num_triples: 10871
+fast_gen: true
+oversample: false
+# Real per-relation triple counts are wildly skewed (child 1897 vs marriedTo
+# 20 out of 6442, ~95x). PyGraft distributes triples across relations as
+# random weights of magnitude (1 - relation_balance_ratio); anything below
+# ~0.7 has a non-trivial chance of zeroing out a relation entirely over 8
+# buckets (checked empirically: 0.6 -> 7/200 runs drop a relation to 0,
+# 0.7 -> 0/200). 0.7 is the lowest ratio that reliably keeps all 8 relations
+# present while still giving a clearly imbalanced (not uniform) distribution.
+relation_balance_ratio: 0.7
+prop_untyped_entities: 0.0
+avg_depth_specific_class: 1.0
+multityping: false
+avg_multityping: 1.0

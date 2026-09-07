@@ -1,0 +1,56 @@
+{
+    "num_classes": 2,
+    "classes": [
+        "Person",
+        "PlaceholderClass"
+    ],
+    "hierarchy_depth": 2,
+    "avg_class_depth": 1.0,
+    "class_inheritance_ratio": 1.0,
+    "direct_class2subclasses": {
+        "owl:Thing": [
+            "Person"
+        ],
+        "Person": [
+            "PlaceholderClass"
+        ]
+    },
+    "direct_class2superclass": {
+        "Person": "owl:Thing",
+        "PlaceholderClass": "Person"
+    },
+    "transitive_class2subclasses": {
+        "owl:Thing": [
+            "Person",
+            "PlaceholderClass"
+        ],
+        "Person": [
+            "PlaceholderClass"
+        ]
+    },
+    "transitive_class2superclasses": {
+        "Person": [
+            "owl:Thing"
+        ],
+        "PlaceholderClass": [
+            "Person",
+            "owl:Thing"
+        ]
+    },
+    "avg_class_disjointness": 0.0,
+    "class2disjoints": {},
+    "class2disjoints_symmetric": [],
+    "class2disjoints_extended": {},
+    "layer2classes": {
+        "1": [
+            "Person"
+        ],
+        "2": [
+            "PlaceholderClass"
+        ]
+    },
+    "class2layer": {
+        "Person": 1,
+        "PlaceholderClass": 2
+    }
+}

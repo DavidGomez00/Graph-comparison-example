@@ -1,0 +1,115 @@
+{
+    "statistics": {
+        "num_relations": 8,
+        "prop_reflexive": 0.0,
+        "prop_irreflexive": 1.0,
+        "prop_functional": 0.0,
+        "prop_inversefunctional": 0.0,
+        "prop_symmetric": 0.25,
+        "prop_asymmetric": 0.0,
+        "prop_transitive": 0.0,
+        "prop_inverseof": 0.5,
+        "prop_subpropertyof": 0.75,
+        "prop_profiled_relations": 1.0,
+        "relation_specificity": 1.0
+    },
+    "relations": [
+        "child",
+        "father",
+        "marriedTo",
+        "mother",
+        "parent",
+        "predecessor",
+        "spouse",
+        "successor"
+    ],
+    "rel2patterns": {
+        "child": [
+            "owl:Irreflexive"
+        ],
+        "father": [
+            "owl:Irreflexive"
+        ],
+        "marriedTo": [
+            "owl:Irreflexive",
+            "owl:Symmetric"
+        ],
+        "mother": [
+            "owl:Irreflexive"
+        ],
+        "parent": [
+            "owl:Irreflexive"
+        ],
+        "predecessor": [
+            "owl:Irreflexive"
+        ],
+        "spouse": [
+            "owl:Irreflexive",
+            "owl:Symmetric"
+        ],
+        "successor": [
+            "owl:Irreflexive"
+        ]
+    },
+    "reflexive_relations": [],
+    "irreflexive_relations": [
+        "child",
+        "father",
+        "marriedTo",
+        "mother",
+        "parent",
+        "predecessor",
+        "spouse",
+        "successor"
+    ],
+    "symmetric_relations": [
+        "marriedTo",
+        "spouse"
+    ],
+    "asymmetric_relations": [],
+    "functional_relations": [],
+    "inversefunctional_relations": [],
+    "transitive_relations": [],
+    "inverseof_relations": [
+        "parent",
+        "child",
+        "successor",
+        "predecessor"
+    ],
+    "subrelations": [
+        "father",
+        "mother",
+        "marriedTo"
+    ],
+    "rel2inverse": {
+        "parent": "child",
+        "child": "parent",
+        "successor": "predecessor",
+        "predecessor": "successor"
+    },
+    "rel2dom": {
+        "child": "Person",
+        "father": "Person",
+        "marriedTo": "Person",
+        "mother": "Person",
+        "parent": "Person",
+        "predecessor": "Person",
+        "spouse": "Person",
+        "successor": "Person"
+    },
+    "rel2range": {
+        "child": "Person",
+        "father": "Person",
+        "marriedTo": "Person",
+        "mother": "Person",
+        "parent": "Person",
+        "predecessor": "Person",
+        "spouse": "Person",
+        "successor": "Person"
+    },
+    "rel2superrel": {
+        "father": "parent",
+        "mother": "parent",
+        "marriedTo": "spouse"
+    }
+}
