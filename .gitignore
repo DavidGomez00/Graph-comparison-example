@@ -1,11 +1,16 @@
+# Python
+__pycache__/
+
+# Local settings
 .claude
 
+# My data
 .data
-.data/*
 
-AMIE/*
+# Git repos
+AMIE/
+pygraft/
 
-pygraft/*
-
+# Other
 *.jar
 
