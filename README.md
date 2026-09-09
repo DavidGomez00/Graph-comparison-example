@@ -156,6 +156,11 @@ triples), and edges/triangles/clustering coefficient computed on a simple
 undirected projection of the graph, including a multiplicity-weighted
 edge-triangle count that accounts for parallel relations between the same
 pair of entities. See the notebook's markdown cells for exact definitions.
+Like `compare_rules` below, `compare_graphs` (and the underlying
+`load_triples`/`graph_metrics`) takes an `exclude_predicates` argument: any
+triple using one of those predicates is dropped before the metrics are
+computed. Pass `{"type"}` to ignore "a type b" relations, which are often
+irrelevant since these graphs only have one type.
 
 **Global/logical metrics** (`compare_rules`): both graphs are run through
 AMIE3 (via [`run_amie.py`](run_amie.py)) to mine Horn rules such as
@@ -164,7 +169,12 @@ names, mined rule *patterns* (canonicalized by variable order, so equivalent
 patterns compare equal) are directly comparable between the two graphs.
 `compare_rules` outer-joins both rule sets on their canonical pattern and
 reports shared vs. unique patterns, Jaccard similarity, and each side's head
-coverage/confidence/support side by side.
+coverage/confidence/support side by side. It takes the same
+`exclude_predicates` argument, dropping any mined rule that uses one of
+those predicates anywhere in its body or head; `type` rules dominate AMIE's
+output (mostly "neighbor's type ⇒ own type"), so `exclude_predicates={"type"}`
+is a quick way to zoom in on the rules relating the KG's "real" relations to
+each other instead.
 
 ## Findings
 
