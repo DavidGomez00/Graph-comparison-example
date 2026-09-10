@@ -38,6 +38,24 @@ def load_graph_tsv(file_path):
     at relation-label strings instead of at target entities). Columns 0
     and 2 are therefore selected explicitly here.
 
+    IMPORTANT: the returned graph is a `MultiDiGraph`, not a plain
+    `DiGraph`, and that is load-bearing. Because the Interaction column is
+    dropped, two triples that share the same Source and Target but differ
+    only in relation (e.g. `Bob reportsTo Alice` and `Bob knows Alice`)
+    become the same `(source, target)` pair. A plain `DiGraph` treats
+    `add_edge(u, v)` as idempotent and silently collapses such duplicate
+    pairs into a single edge, undercounting the in/out-degree of every
+    node involved -- with no warning, since this is valid `DiGraph` usage.
+    `office.tsv` has two such pairs (`Bob`-`Alice`, `Charlie`-`Bob`), which
+    previously made `calculate_js_divergence` report a non-zero divergence
+    against a synthetic graph whose per-node degree distribution (as
+    recorded in `office_nodes.csv`/`office_pygraft_nodes.csv`, exported
+    from a multigraph-aware source) was actually identical: the "real"
+    side had quietly lost edges that the synthetic side hadn't.
+    `MultiDiGraph` keeps each triple as its own parallel edge, so
+    `in_degree()`/`out_degree()` match the true edge count regardless of
+    how many relations connect the same pair of nodes.
+
     Note: a node only enters the resulting graph if it appears in at least
     one edge line. Because of this, fully isolated nodes (0 in-degree AND
     0 out-degree) can never exist in a graph built this way. Nodes with
@@ -48,9 +66,12 @@ def load_graph_tsv(file_path):
         file_path: Path to the TSV edge-list file.
 
     Returns:
-        A `networkx.DiGraph` built from the file's Source/Target columns.
+        A `networkx.MultiDiGraph` built from the file's Source/Target
+        columns, with one parallel edge per triple (so same-direction
+        triples between the same pair of nodes are preserved rather than
+        collapsed).
     """
-    graph = nx.DiGraph()
+    graph = nx.MultiDiGraph()
     with open(file_path, encoding="utf-8") as f:
         for line_number, line in enumerate(f, start=1):
             line = line.rstrip("\n")
@@ -142,6 +163,13 @@ def calculate_spectral_distance(G_real, G_synthetic, normalized: bool = True):
     both have the same length, and the Euclidean distance between the two
     resulting vectors is returned.
 
+    If a graph is a `MultiDiGraph` (as `load_graph_tsv` returns), its
+    undirected version is a `MultiGraph`, and networkx builds the Laplacian
+    from edge-weight sums -- so a node pair connected by several parallel
+    edges (multiple relations between the same two entities) contributes
+    more weight than a pair connected by one, which is the intended,
+    structure-preserving behavior rather than an artifact.
+
     Limitation: normalized-Laplacian eigenvalues lie in [0, 2], and a value
     of 0 corresponds to a disconnected component. Zero-padding the smaller
     graph's spectrum therefore implicitly treats every "missing" node as an
@@ -194,8 +222,8 @@ def calculate_spectral_distance(G_real, G_synthetic, normalized: bool = True):
 
 if __name__ == "__main__":
     # Replace these paths with your own files
-    real_file = ".data/mario/simple_mario.tsv"
-    synthetic_file = ".data/mario/simple_pygraft.tsv"
+    real_file = "data/office/office.tsv"
+    synthetic_file = "data/office/office_pygraft.tsv"
 
     print("Loading graphs...")
     real_graph = load_graph_tsv(real_file)
@@ -209,10 +237,10 @@ if __name__ == "__main__":
     zero_out_synth = sum(1 for _, d in synthetic_graph.out_degree() if d == 0)
 
     print(
-        f"Real graph: {real_graph.number_of_nodes()} nodes, {real_graph.number_of_edges()} edges, {zero_in_real} nodes with in-degree=0, {zero_out_real} nodes with out-degree 0"
+        f"Real graph: {real_graph.number_of_nodes()} nodes, {real_graph.number_of_edges()} edges, {zero_in_real} nodes with in-degree=0, {zero_out_real} nodes with out-degree=0."
     )
     print(
-        f"Synthetic graph: {synthetic_graph.number_of_nodes()} nodes, {synthetic_graph.number_of_edges()} edges, {zero_in_synth} nodes with in-degree=0, {zero_out_synth} nodes with out-degree 0"
+        f"Synthetic graph: {synthetic_graph.number_of_nodes()} nodes, {synthetic_graph.number_of_edges()} edges, {zero_in_synth} nodes with in-degree=0, {zero_out_synth} nodes with out-degree=0."
     )
     print("-" * 50)
 

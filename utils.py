@@ -43,3 +43,7 @@ def parse_result(full_graph, ttl_file, tsv_file, n_entities=15):
     )
 
     ttl2tsv(ttl_file, tsv_file)
+
+
+if __name__ == "__main__":
+    ttl2tsv(ttl_file="data/office/office.ttl", output_file="data/office/office.tsv")
