@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:sc="http://pygraf.t/"
+>
+  <rdf:Description rdf:about="http://pygraf.t/">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <dcterms:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/>
+    <rdfs:comment xml:lang="es">Ontología de referencia para la gestión de recursos humanos,
+    asignación de proyectos y estructuras organizacionales.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/knows">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/reports_to">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E1">
+    <sc:knows rdf:resource="http://pygraf.t/E5"/>
+    <sc:knows rdf:resource="http://pygraf.t/E4"/>
+    <rdf:type rdf:resource="http://pygraf.t/Person"/>
+    <sc:assigned_to rdf:resource="http://pygraf.t/E3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E5">
+    <rdf:type rdf:resource="http://pygraf.t/Person"/>
+    <sc:reports_to rdf:resource="http://pygraf.t/E1"/>
+    <sc:assigned_to rdf:resource="http://pygraf.t/E3"/>
+    <sc:knows rdf:resource="http://pygraf.t/E4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/assigned_to">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Project"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E2">
+    <rdf:type rdf:resource="http://pygraf.t/Organization"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E4">
+    <sc:reports_to rdf:resource="http://pygraf.t/E5"/>
+    <sc:reports_to rdf:resource="http://pygraf.t/E1"/>
+    <rdf:type rdf:resource="http://pygraf.t/Person"/>
+    <sc:works_for rdf:resource="http://pygraf.t/E2"/>
+    <sc:assigned_to rdf:resource="http://pygraf.t/E3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/Organization">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/Person">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/Project">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/works_for">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
+    <rdfs:range rdf:resource="http://pygraf.t/Organization"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://pygraf.t/E3">
+    <rdf:type rdf:resource="http://pygraf.t/Project"/>
+  </rdf:Description>
+</rdf:RDF>

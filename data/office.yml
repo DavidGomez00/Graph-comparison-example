@@ -1,0 +1,44 @@
+# GENERAL ARGS #
+schema_name: office
+format: xml
+
+# SCHEMA ARGS #
+## CLASSES ##
+num_classes: 3
+max_hierarchy_depth: 2
+avg_class_depth: 1
+class_inheritance_ratio: 0.0
+avg_disjointness: 0.0
+verbose: true
+
+## RELATIONS ##
+num_relations: 4
+relation_specificity: 1.0
+prop_profiled_relations: 1.0
+profile_side: both
+prop_symmetric_relations: 0.25
+prop_inverse_relations: 0.0
+prop_transitive_relations: 0.0
+prop_asymmetric_relations: 0.25
+prop_reflexive_relations: 0.0
+prop_irreflexive_relations: 0.25
+prop_functional_relations: 0.0
+prop_inverse_functional_relations: 0.0
+prop_subproperties: 0.0
+
+# KNOWLEDGE GRAPH ARGS ##
+# num_triples counts relation triples only (matching pygraft's own self.kg
+# semantics, confirmed against mario.yml's num_triples: 119 == the relation-only
+# triple count reported for mario.tsv in README.md); rdf:type triples are added
+# separately, one per typed entity, on top of this count. office.ttl has 15
+# triples total but only 10 of them are relation triples (4 knows, 2 works_for,
+# 2 assignedTo, 2 reportsTo) -- the other 5 are rdf:type.
+num_entities: 5
+num_triples: 10
+fast_gen: true
+oversample: false
+relation_balance_ratio: 0.5
+prop_untyped_entities: 0.0
+avg_depth_specific_class: 1.0
+multityping: false
+avg_multityping: 1.0

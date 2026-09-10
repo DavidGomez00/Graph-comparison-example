@@ -1,0 +1,62 @@
+{
+    "statistics": {
+        "num_relations": 4,
+        "prop_reflexive": 0.0,
+        "prop_irreflexive": 0.25,
+        "prop_functional": 0.0,
+        "prop_inversefunctional": 0.0,
+        "prop_symmetric": 0.25,
+        "prop_asymmetric": 0.25,
+        "prop_transitive": 0.0,
+        "prop_inverseof": 0.0,
+        "prop_subpropertyof": 0.0,
+        "prop_profiled_relations": 1.0,
+        "relation_specificity": 1.0
+    },
+    "relations": [
+        "works_for",
+        "assigned_to",
+        "knows",
+        "reports_to"
+    ],
+    "rel2patterns": {
+        "works_for": [],
+        "knows": [
+            "owl:Irreflexive",
+            "owl:Symmetric"
+        ],
+        "assigned_to": [],
+        "reports_to": [
+            "owl:Asymmetric"
+        ]
+    },
+    "reflexive_relations": [],
+    "irreflexive_relations": [
+        "knows"
+    ],
+    "symmetric_relations": [
+        "knows"
+    ],
+    "asymmetric_relations": [
+        "reports_to"
+    ],
+    "functional_relations": [],
+    "inversefunctional_relations": [],
+    "transitive_relations": [],
+    "inverseof_relations": [],
+    "subrelations": [],
+    "rel2inverse": {},
+    "rel2dom": {
+        "works_for": "Person",
+        "reports_to": "Person",
+        "assigned_to": "Person",
+        "knows": "Person"
+    },
+    "rel2range": {
+        "works_for": "Organization",
+        "assigned_to": "Project",
+        "reports_to": "Person",
+        "knows": "Person"
+    },
+    "rel2superrel": {}
+}

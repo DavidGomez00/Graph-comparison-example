@@ -1,0 +1,57 @@
+{
+    "num_classes": 3,
+    "classes": [
+        "Person",
+        "Organization",
+        "Project"
+    ],
+    "hierarchy_depth": 1,
+    "avg_class_depth": 1.0,
+    "class_inheritance_ratio": 0.0,
+    "direct_class2subclasses": {
+        "owl:Thing": [
+            "Person",
+            "Organization",
+            "Project"
+        ]
+    },
+    "direct_class2superclass": {
+        "Person": "owl:Thing",
+        "Organization": "owl:Thing",
+        "Project": "owl:Thing"
+    },
+    "transitive_class2subclasses": {
+        "owl:Thing": [
+            "Person",
+            "Organization",
+            "Project"
+        ]
+    },
+    "transitive_class2superclasses": {
+        "Person": [
+            "owl:Thing"
+        ],
+        "Organization": [
+            "owl:Thing"
+        ],
+        "Project": [
+            "owl:Thing"
+        ]
+    },
+    "avg_class_disjointness": 0.0,
+    "class2disjoints": { },
+    "class2disjoints_symmetric": [ ],
+    "class2disjoints_extended": { },
+    "layer2classes": {
+        "1": [
+            "Person",
+            "Organization",
+            "Project"
+        ]
+    },
+    "class2layer": {
+        "Person": 1,
+        "Organization": 1,
+        "Project": 1
+    }
+}
