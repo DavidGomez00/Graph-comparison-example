@@ -262,6 +262,7 @@ def plot_pair_counts_comparison(
     category_column: str,
     value_columns: list[str],
     labels: list[str] | None = None,
+    exclude_categories: list[str] | None = None,
     title: str | None = None,
     figsize: tuple[float, float] = (7, 4),
     xtick_rotation: int = 0,
@@ -287,6 +288,12 @@ def plot_pair_counts_comparison(
             warning. Column order fixes bar order (and color) within a group.
         - labels: legend label for each value column, in the same order as
             value_columns. Defaults to the column names themselves.
+        - exclude_categories: category values (from `category_column`) to
+            leave out of the chart entirely, e.g. `["type"]` to drop a
+            rdf:type-like row that isn't a meaningful entity-to-entity
+            relation and would otherwise dominate the y-axis. Matched
+            exactly against the column's string values; a name that isn't
+            actually present is silently ignored.
         - title: chart title. Defaults to "<value_columns> by <category_column>".
         - figsize: (width, height) in inches for the figure.
         - xtick_rotation: rotation (degrees) for category tick labels, useful
@@ -306,6 +313,9 @@ def plot_pair_counts_comparison(
     missing = [c for c in [category_column, *value_columns] if c not in df.columns]
     if missing:
         raise ValueError(f"Column(s) not found in {csv_path}: {missing}")
+
+    if exclude_categories:
+        df = df[~df[category_column].astype(str).isin(exclude_categories)]
 
     categories = df[category_column].astype(str).tolist()
     series_per_column = []
@@ -342,6 +352,12 @@ def plot_pair_counts_comparison(
         categories, rotation=xtick_rotation, ha="right" if xtick_rotation else "center"
     )
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    if title is not None:
+        ax.set_title(
+            title or f"{', '.join(value_columns)} by {category_column}",
+            color=PRIMARY_INK,
+            fontsize=11,
+        )
     ax.set_xlabel(category_column, color=MUTED_INK, fontsize=9)
     ax.set_ylabel("count", color=MUTED_INK, fontsize=9)
     ax.tick_params(colors=MUTED_INK, labelsize=8)
@@ -380,9 +396,9 @@ if __name__ == "__main__":
 
     plot_pair_counts_comparison(
         csv_path="plots/pair_distributions.csv",
-        category_column="pred",
+        category_column="relation",
         value_columns=["pairs_real", "pairs_pygraft"],
         labels=["Real KG", "Synthetic KG"],
-        title="Subject-Object Pairs per Predicate",
-        save_path="plots/relation_pairs.png",
+        save_path="plots/ex_relation_pairs.png",
+        exclude_categories=["type"],
     )

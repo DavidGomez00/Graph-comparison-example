@@ -1,34 +1,49 @@
 """
 Topological similarity between two graphs.
 
-Compares a "real" graph against a "synthetic" one along two complementary
+Compares a "real" graph against a "synthetic" one along three complementary
 axes:
 
 1. Spectral distance: Euclidean distance between the sorted eigenvalues of
    the normalized Laplacian matrix of each graph. It is sensitive to global
    structural properties (connectivity, community structure, overall shape)
    rather than to individual node degrees.
-2. Jensen-Shannon divergence: compares the in-degree and out-degree
-   distributions of the two graphs node by node. It captures how similar the
-   local connectivity patterns are, independent of global structure.
+2. Jensen-Shannon divergence (degrees): compares the in-degree and
+   out-degree distributions of the two graphs node by node. It captures how
+   similar the local connectivity patterns are, independent of global
+   structure.
+3. Jensen-Shannon divergence (predicates): compares how the two graphs'
+   subject-object pairs are distributed across predicates/relation types.
+   Unlike node degrees, predicate labels are shared vocabulary between the
+   two graphs (the synthetic graph is generated from the real graph's
+   schema), so this one captures whether each relation type is exercised
+   proportionally as often in both, not just whether degree shapes match.
 
-Lower values indicate greater similarity for both metrics.
+Lower values indicate greater similarity for all three metrics.
 """
+
+import re
+from collections import Counter
 
 import networkx as nx
 import numpy as np
 from scipy.linalg import eigvalsh
 from scipy.spatial.distance import jensenshannon
 
+# Matches the position just before an internal capital letter, e.g. the "T"
+# in "assignedTo" -- used to canonicalize predicate names (see
+# `_normalize_predicate`).
+_CAMEL_HUMP_RE = re.compile(r"(?<!^)(?=[A-Z])")
 
-def load_graph_tsv(file_path):
+
+def _iter_triples(file_path):
     """
-    Load a directed graph from a TSV edge list.
+    Yield (source, predicate, target) tuples from a TSV edge-list file.
 
     The file is assumed to have three tab-separated columns per line:
-    Source, Interaction, Target. Only the Source and Target columns are
-    used to build edges; the Interaction column (the relation label) is
-    ignored, since this script only performs pure topology analysis.
+    Source, Interaction, Target. This is the shared parsing/validation
+    helper behind both `load_graph_tsv` (topology only, predicate dropped)
+    and `count_predicate_pairs` (predicate-aware).
 
     IMPORTANT: this is deliberately NOT implemented as
     `nx.read_edgelist(file_path, delimiter="\\t", data=False)`. That call
@@ -37,6 +52,35 @@ def load_graph_tsv(file_path):
     Target column and producing a completely wrong graph (edges pointing
     at relation-label strings instead of at target entities). Columns 0
     and 2 are therefore selected explicitly here.
+
+    Args:
+        file_path: Path to the TSV edge-list file.
+
+    Yields:
+        (source, predicate, target) string tuples, one per non-empty line.
+    """
+    with open(file_path, encoding="utf-8") as f:
+        for line_number, line in enumerate(f, start=1):
+            line = line.rstrip("\n")
+            if not line:
+                continue
+            columns = line.split("\t")
+            if len(columns) < 3:
+                raise ValueError(
+                    f"{file_path}:{line_number}: expected 3 tab-separated columns "
+                    f"(Source, Interaction, Target), got {len(columns)}: {line!r}"
+                )
+            yield columns[0], columns[1], columns[2]
+
+
+def load_graph_tsv(file_path, exclude_predicates=None):
+    """
+    Load a directed graph from a TSV edge list.
+
+    Only the Source and Target columns are used to build edges; the
+    Interaction column (the relation label) is ignored (beyond the
+    `exclude_predicates` filter below), since this is the pure-topology view
+    of the graph (see `count_predicate_pairs` for the predicate-aware view).
 
     IMPORTANT: the returned graph is a `MultiDiGraph`, not a plain
     `DiGraph`, and that is load-bearing. Because the Interaction column is
@@ -64,28 +108,83 @@ def load_graph_tsv(file_path):
 
     Args:
         file_path: Path to the TSV edge-list file.
+        exclude_predicates: Optional iterable of predicate/relation labels
+            to leave out of the graph entirely (e.g. `{"type"}` to drop
+            rdf:type-like class-membership edges and restrict the graph to
+            entity-to-entity relationships). Matched via
+            `_normalize_predicate`, so it's insensitive to the camelCase vs.
+            snake_case differences between the real and synthetic graphs'
+            predicate spellings. A node that only ever appears in excluded
+            edges is dropped from the resulting graph entirely, same as any
+            other node absent from every edge line (see the "Note" above).
 
     Returns:
         A `networkx.MultiDiGraph` built from the file's Source/Target
-        columns, with one parallel edge per triple (so same-direction
-        triples between the same pair of nodes are preserved rather than
-        collapsed).
+        columns, with one parallel edge per (non-excluded) triple (so
+        same-direction triples between the same pair of nodes are preserved
+        rather than collapsed).
     """
+    exclude = {_normalize_predicate(p) for p in (exclude_predicates or ())}
     graph = nx.MultiDiGraph()
-    with open(file_path, encoding="utf-8") as f:
-        for line_number, line in enumerate(f, start=1):
-            line = line.rstrip("\n")
-            if not line:
-                continue
-            columns = line.split("\t")
-            if len(columns) < 3:
-                raise ValueError(
-                    f"{file_path}:{line_number}: expected 3 tab-separated columns "
-                    f"(Source, Interaction, Target), got {len(columns)}: {line!r}"
-                )
-            source, _interaction, target = columns[0], columns[1], columns[2]
-            graph.add_edge(source, target)
+    for source, predicate, target in _iter_triples(file_path):
+        if _normalize_predicate(predicate) in exclude:
+            continue
+        graph.add_edge(source, target)
     return graph
+
+
+def _normalize_predicate(predicate):
+    """
+    Canonicalize a predicate/relation label for cross-graph comparison.
+
+    A real-world graph and a pygraft-synthesized one can use different
+    naming conventions for what is semantically the same relation -- e.g.
+    the office ontology's camelCase `assignedTo`/`reportsTo` vs. pygraft's
+    snake_case `assigned_to`/`reports_to`. Comparing raw predicate strings
+    would treat these as unrelated categories and understate how similar
+    the predicate-pair distributions actually are. Inserting an underscore
+    before each internal capital letter and lowercasing the result collapses
+    both conventions to the same key (`assignedTo` -> `assigned_to`,
+    `assigned_to` -> `assigned_to`, unchanged).
+
+    Args:
+        predicate: A raw predicate/relation label.
+
+    Returns:
+        The lowercase, snake_case form of `predicate`.
+    """
+    return _CAMEL_HUMP_RE.sub("_", predicate).lower()
+
+
+def count_predicate_pairs(file_path, exclude_predicates=None):
+    """
+    Count subject-object pairs per predicate in a TSV edge-list file.
+
+    Each line contributes one pair to its predicate's count. Predicate
+    labels are canonicalized with `_normalize_predicate` first, so that
+    naming-convention differences between a real graph and a
+    pygraft-synthesized one don't fragment what is really the same relation
+    into separate categories.
+
+    Args:
+        file_path: Path to the TSV edge-list file.
+        exclude_predicates: Optional iterable of predicate/relation labels
+            to omit from the counts entirely (see `load_graph_tsv` for
+            matching semantics -- the same `_normalize_predicate` matching
+            is used here).
+
+    Returns:
+        A `collections.Counter` mapping normalized predicate -> pair count,
+        excluding any predicate named in `exclude_predicates`.
+    """
+    exclude = {_normalize_predicate(p) for p in (exclude_predicates or ())}
+    counts = Counter()
+    for _source, predicate, _target in _iter_triples(file_path):
+        normalized = _normalize_predicate(predicate)
+        if normalized in exclude:
+            continue
+        counts[normalized] += 1
+    return counts
 
 
 def calculate_js_divergence(G_real, G_synthetic, degree_type="in"):
@@ -142,6 +241,55 @@ def calculate_js_divergence(G_real, G_synthetic, degree_type="in"):
     # Build probability density functions (PDFs)
     pdf_real, _ = np.histogram(degrees_real, bins=bins, density=True)
     pdf_synth, _ = np.histogram(degrees_synth, bins=bins, density=True)
+
+    # scipy computes the JS *distance*; the divergence is its square.
+    # base=2 keeps the result bounded in [0, 1], matching common usage.
+    js_distance = jensenshannon(pdf_real, pdf_synth, base=2)
+    js_divergence = js_distance**2
+
+    return js_divergence
+
+
+def calculate_predicate_js_divergence(counts_real, counts_synthetic):
+    """
+    Compute the JS divergence between two per-predicate pair-count
+    distributions.
+
+    Unlike `calculate_js_divergence` (which compares in-/out-degree
+    sequences as unordered multisets, since node identities don't
+    correspond across a real graph and a synthetic one with renamed
+    entities), predicate labels here ARE shared vocabulary between the two
+    graphs -- the synthetic graph is generated from the real graph's
+    schema. So the two count vectors must be aligned *by predicate name*
+    rather than by sorting: sorting would silently compare unrelated
+    predicates against each other whenever their pair counts happen to
+    coincide in rank (e.g. `office.tsv`'s `[5, 4, 2, 2, 2]` against
+    `office_pygraft.tsv`'s `[5, 3, 3, 3, 1]`, sorted, would line up `knows`
+    against whichever predicate happens to also be the second-most common
+    in the other graph -- not necessarily `knows` there).
+
+    A predicate present in only one graph is treated as having a count of 0
+    in the other, rather than being dropped, so a predicate the synthetic
+    graph invented (or omitted) still counts against similarity.
+
+    Args:
+        counts_real: predicate -> pair count for the real graph, e.g. from
+            `count_predicate_pairs`.
+        counts_synthetic: predicate -> pair count for the synthetic graph.
+
+    Returns:
+        The Jensen-Shannon divergence (float, base 2), where 0 means the
+        two graphs distribute their subject-object pairs across predicates
+        in exactly the same proportions.
+    """
+    predicates = sorted(set(counts_real) | set(counts_synthetic))
+    counts_vec_real = np.array([counts_real.get(p, 0) for p in predicates], dtype=float)
+    counts_vec_synth = np.array(
+        [counts_synthetic.get(p, 0) for p in predicates], dtype=float
+    )
+
+    pdf_real = counts_vec_real / counts_vec_real.sum()
+    pdf_synth = counts_vec_synth / counts_vec_synth.sum()
 
     # scipy computes the JS *distance*; the divergence is its square.
     # base=2 keeps the result bounded in [0, 1], matching common usage.
@@ -225,9 +373,16 @@ if __name__ == "__main__":
     real_file = "data/office/office.tsv"
     synthetic_file = "data/office/office_pygraft.tsv"
 
+    # Predicates to leave out of every measurement below. "type" edges only
+    # encode rdf:type-like class membership (entity -> class name), not a
+    # relationship between two real-world entities, and dominate degree and
+    # spectral comparisons in a graph this small. Set to None (or an empty
+    # set) to include every predicate instead.
+    exclude_predicates = {"type"}
+
     print("Loading graphs...")
-    real_graph = load_graph_tsv(real_file)
-    synthetic_graph = load_graph_tsv(synthetic_file)
+    real_graph = load_graph_tsv(real_file, exclude_predicates=exclude_predicates)
+    synthetic_graph = load_graph_tsv(synthetic_file, exclude_predicates=exclude_predicates)
 
     # Diagnostic only: count nodes that are pure sources (in-degree 0) or
     # pure sinks (out-degree 0) in each graph.
@@ -250,6 +405,19 @@ if __name__ == "__main__":
 
     print(f"JS divergence (in-degree):  {js_in:.4f}")
     print(f"JS divergence (out-degree): {js_out:.4f}")
+
+    # 1.5. Jensen-Shannon divergence for the pairs-per-predicate distribution
+    predicate_counts_real = count_predicate_pairs(
+        real_file, exclude_predicates=exclude_predicates
+    )
+    predicate_counts_synth = count_predicate_pairs(
+        synthetic_file, exclude_predicates=exclude_predicates
+    )
+    js_predicates = calculate_predicate_js_divergence(
+        predicate_counts_real, predicate_counts_synth
+    )
+
+    print(f"JS divergence (pairs-per-predicate): {js_predicates:.4f}")
 
     # 2. Spectral distance (values closer to 0 = greater global structural similarity)
     spectral_distance = calculate_spectral_distance(
