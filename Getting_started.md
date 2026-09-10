@@ -21,7 +21,20 @@ small. Pass `--mins 1 --minis 1 --minhc 0` (and optionally `--minc 0
 
 **Python dependencies**: `networkx`, `numpy`, `pandas`, `rdflib`, `pygraft`,
 plus Jupyter to run the notebooks. There is currently no pinned
-requirements/environment file in this repo.
+requirements/environment file in this repo. These are installed in the
+`NeSy` pyenv virtualenv (`~/.pyenv/versions/NeSy/bin/python`), not the system
+interpreter -- run PyGraft scripts/notebooks with that interpreter.
+
+**Footgun**: this repo has a vendored, git-ignored `./pygraft/` source clone
+at the repo root (see `.gitignore`; obtained separately, see "AMIE/ and
+pygraft/ directories" below). If you run `import pygraft` with an interpreter
+that doesn't have the real `pygraft` package pip-installed, Python silently
+resolves the import to that directory as an empty namespace package instead
+of raising `ModuleNotFoundError` -- so a run against the wrong interpreter
+doesn't fail with a clear "not installed" error, it fails later with a
+confusing `AttributeError: module 'pygraft' has no attribute 'generate_kg'`
+(or similar). If you see that error, you're on the wrong interpreter -- use
+`~/.pyenv/versions/NeSy/bin/python`.
 
 **AMIE3**: `run_amie.py` shells out to a local AMIE3 `.jar` (default:
 `amie3.5.1.jar` next to the script, override with `--jar`). It requires a

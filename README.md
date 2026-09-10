@@ -117,6 +117,134 @@ comments in `french_royalty.yml`:
    lowest value that reliably (0/200 trial runs) keeps all 8 relations
    present, at the cost of a milder imbalance than the real data's.
 
+### Office schema
+
+[`data/office.ttl`](data/office.ttl) is a small hand-authored target graph: 5
+entities (3 `Person` -- Alice, Bob, Charlie --, 1 `Organization`, 1 `Project`)
+connected by 10 relation triples over 4 relations (`knows`, `works_for`,
+`assignedTo`, `reportsTo`). Configured in
+[`data/office.yml`](data/office.yml). The schema in
+[`output/office/schema.rdf`](output/office/schema.rdf) (and its matching
+[`class_info.json`](output/office/class_info.json) /
+[`relation_info.json`](output/office/relation_info.json)) was hand-customized
+the same way as Mario's and French royalty's: 3 real classes (`Person`,
+`Organization`, `Project`, all flat direct subclasses of `owl:Thing` -- no
+`PlaceholderClass` needed here, since 3 real classes already satisfies
+PyGraft's minimum) and the 4 real relations, with characteristics inferred
+from what they mean: `knows` is `owl:SymmetricProperty` +
+`owl:IrreflexiveProperty` (domain/range both `Person`), `reports_to` is
+`owl:AsymmetricProperty` (domain/range both `Person`), `works_for` is
+`Person` -> `Organization`, `assigned_to` is `Person` -> `Project`.
+
+Two details worth calling out for anyone hand-crafting a schema this small:
+
+- **`class_info.json`'s hierarchy dictionaries must be fully populated, not
+  left as placeholders.** `pygraft.generate_kg`'s `assign_most_specific` reads
+  `class_info["layer2classes"][layer]` directly and raises `KeyError`
+  immediately if it's empty. Since all 3 office classes are flat (no
+  subclassing, `class_inheritance_ratio: 0.0`), they all belong to a single
+  layer: `hierarchy_depth: 1`, `layer2classes: {"1": ["Person",
+  "Organization", "Project"]}`, and so on for `class2layer` /
+  `direct_class2subclasses` / `direct_class2superclass` /
+  `transitive_class2subclasses` / `transitive_class2superclasses` (see
+  `output/office/class_info.json`).
+- **`num_triples` in the `.yml` config counts relation triples only** --
+  `pygraft`'s own `self.kg` semantics, confirmed against `mario.yml`'s
+  `num_triples: 119` matching the relation-only triple count quoted for Mario
+  above. `rdf:type` triples are added separately by `generate_kg`, one per
+  typed entity, on top of that count. `office.ttl` has 15 triples in total,
+  but only 10 of them are relation triples (the other 5 are `rdf:type`), so
+  `office.yml` sets `num_triples: 10`, not 15.
+
+Running `python run_pygraft.py` (see "Running PyGraft" below) calls
+`pygraft.generate_kg("data/office.yml")`, producing
+[`output/office/full_graph.rdf`](output/office/full_graph.rdf) and
+`output/office/kg_info.json`, then parses the result down to
+`data/office/office_pygraft.ttl`/`.tsv` the same way Mario's is.
+
+With only 5 entities randomly typed across 3 classes (PyGraft samples each
+entity's specific class uniformly at random within its layer -- there's no
+way to bias it towards office.ttl's real 3:1:1 split), a run has a
+non-trivial chance of leaving a class or a relation completely empty (e.g. no
+entity drawn `Organization`, so `works_for` never fires), and
+`generate_triples` gives up for good after 10 consecutive failed attempts
+rather than retrying indefinitely. Re-running `python run_pygraft.py` a
+handful of times until `output/office/kg_info.json` reports
+`num_instantiated_relations: 4` (all relations used) reliably lands a full
+reproduction -- this is a property of generating from such a small entity
+pool, not a bug.
+
+### Running PyGraft
+
+PyGraft (and this repo's other Python dependencies) are installed in the
+`NeSy` pyenv virtualenv, not the system interpreter -- see "Setup" in
+[`Getting_started.md`](Getting_started.md) for the exact interpreter path and
+a footgun worth knowing about.
+
+[`run_pygraft.py`](run_pygraft.py) drives a single schema end to end:
+
+```bash
+~/.pyenv/versions/NeSy/bin/python run_pygraft.py
+```
+
+It sets `schema_name` at the top of the file (currently `"office"`), calls
+`pygraft.generate_kg(f"data/{schema_name}.yml")`, then uses
+[`utils.py`](utils.py)'s `parse_result` to filter `output/<schema_name>/full_graph.rdf`
+down to entity-to-entity and `rdf:type` triples only, serialized as
+`data/<schema_name>/<schema_name>_pygraft.ttl`/`.tsv` for comparison against
+the target graph. To generate a different schema, change `schema_name` (a
+config `data/<name>.yml` and hand-crafted `output/<name>/{schema.rdf,
+class_info.json, relation_info.json}` must already exist -- see the recipe
+below).
+
+### Hand-crafting a PyGraft schema for a new target graph
+
+Mario, French royalty, and Office all follow the same recipe for turning a
+target graph into a comparable synthetic one:
+
+1. Count the target graph's classes, distinct relations, entities, and
+   relation triples (i.e. everything except `rdf:type` triples).
+2. Write `data/<name>.yml` from PyGraft's own template
+   (`pygraft.create_template()`, vendored here as
+   [`data/template.yml`](data/template.yml)), setting `schema_name` and
+   `num_classes`/`num_relations`/`num_entities` to the real counts,
+   `num_triples` to the real **relation-triple** count (not the total --
+   `generate_kg` adds one `rdf:type` triple per typed entity on top of this),
+   and the `prop_*_relations` fields to `count / num_relations` for each OWL
+   characteristic actually present in the target data.
+3. Hand-write `output/<name>/schema.rdf` (OWL classes + `owl:ObjectProperty`
+   declarations with real domain/range and characteristics), matching the
+   target's real predicate semantics. If there's only 1 real class, add an
+   inert second `PlaceholderClass` (see Mario/French royalty) -- PyGraft
+   requires at least 2.
+4. Hand-write `output/<name>/class_info.json` -- the two most common
+   mistakes: `hierarchy_depth` must equal the *actual* deepest populated
+   layer (not the `max_hierarchy_depth` config ceiling), and
+   `layer2classes`/`class2layer`/`direct_class2subclasses`/`direct_class2superclass`/
+   `transitive_class2subclasses`/`transitive_class2superclasses` must never be
+   left as empty placeholders -- `generate_kg` reads them directly and
+   `KeyError`s immediately if they don't cover every class. A flat,
+   non-hierarchical schema (all classes direct children of `owl:Thing`) is
+   layer `1` for every class, `hierarchy_depth: 1`.
+5. Hand-write `output/<name>/relation_info.json` -- `relations`, `rel2dom`,
+   `rel2range`, `rel2patterns`, the per-characteristic lists
+   (`symmetric_relations`, `asymmetric_relations`, etc.), `rel2inverse`,
+   `rel2superrel`, and a `statistics` block whose `prop_*` fields equal
+   `len(list) / num_relations` (PyGraft's own formula, see
+   `relation_generator.py`'s `assemble_relation_info`) -- keep it consistent
+   with the lists, even though `generate_kg` itself never reads `statistics`.
+6. Set `schema_name` in `run_pygraft.py` to `<name>` and run it (see "Running
+   PyGraft" above). Confirm the "Consistent KG" message and
+   `output/<name>/{full_graph.rdf,kg_info.json}`. For a small entity pool,
+   `output/<name>/kg_info.json`'s `statistics.num_instantiated_relations` may
+   come up short of the schema's real relation count on a given run (see
+   "Office schema" above) -- just re-run until it doesn't.
+7. Compare structurally against the target file (entity/class/relation
+   counts, and optionally `topologic_similarity.py` after converting both to
+   TSV) -- PyGraft always names synthetic entities generically (`E1`, `E2`,
+   ...), so this is a structural/statistical match, not a literal
+   triple-for-triple copy.
+
 ### The synthetic graph's own schema relationships don't show up in the data
 
 `output/french_royalty/schema.rdf` declares `parent`/`child` and
