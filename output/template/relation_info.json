@@ -1,0 +1,355 @@
+{
+    "statistics": {
+        "num_relations": 50,
+        "prop_reflexive": 0.3,
+        "prop_irreflexive": 0.0,
+        "prop_functional": 0.0,
+        "prop_inversefunctional": 0.0,
+        "prop_symmetric": 0.3,
+        "prop_asymmetric": 0.0,
+        "prop_transitive": 0.1,
+        "prop_inverseof": 0.32,
+        "prop_subpropertyof": 0.32,
+        "prop_profiled_relations": 0.91,
+        "relation_specificity": 2.53
+    },
+    "relations": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R8",
+        "R9",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17",
+        "R18",
+        "R19",
+        "R20",
+        "R21",
+        "R22",
+        "R23",
+        "R24",
+        "R25",
+        "R26",
+        "R27",
+        "R28",
+        "R29",
+        "R30",
+        "R31",
+        "R32",
+        "R33",
+        "R34",
+        "R35",
+        "R36",
+        "R37",
+        "R38",
+        "R39",
+        "R40",
+        "R41",
+        "R42",
+        "R43",
+        "R44",
+        "R45",
+        "R46",
+        "R47",
+        "R48",
+        "R49",
+        "R50"
+    ],
+    "rel2patterns": {
+        "R1": [
+            "owl:Symmetric"
+        ],
+        "R2": [
+            "owl:Reflexive"
+        ],
+        "R3": [],
+        "R4": [],
+        "R5": [
+            "owl:Reflexive"
+        ],
+        "R6": [
+            "owl:Symmetric"
+        ],
+        "R7": [],
+        "R8": [
+            "owl:Reflexive"
+        ],
+        "R9": [
+            "owl:Reflexive"
+        ],
+        "R10": [],
+        "R11": [],
+        "R12": [
+            "owl:Reflexive"
+        ],
+        "R13": [],
+        "R14": [
+            "owl:Symmetric",
+            "owl:Transitive"
+        ],
+        "R15": [
+            "owl:Symmetric",
+            "owl:Reflexive"
+        ],
+        "R16": [],
+        "R17": [],
+        "R18": [
+            "owl:Transitive"
+        ],
+        "R19": [],
+        "R20": [
+            "owl:Symmetric"
+        ],
+        "R21": [
+            "owl:Symmetric"
+        ],
+        "R22": [
+            "owl:Transitive"
+        ],
+        "R23": [],
+        "R24": [
+            "owl:Symmetric"
+        ],
+        "R25": [],
+        "R26": [],
+        "R27": [
+            "owl:Reflexive"
+        ],
+        "R28": [
+            "owl:Symmetric"
+        ],
+        "R29": [],
+        "R30": [],
+        "R31": [
+            "owl:Transitive"
+        ],
+        "R32": [],
+        "R33": [
+            "owl:Symmetric"
+        ],
+        "R34": [
+            "owl:Reflexive"
+        ],
+        "R35": [
+            "owl:Symmetric",
+            "owl:Reflexive"
+        ],
+        "R36": [
+            "owl:Symmetric"
+        ],
+        "R37": [
+            "owl:Symmetric"
+        ],
+        "R38": [
+            "owl:Reflexive"
+        ],
+        "R39": [
+            "owl:Reflexive"
+        ],
+        "R40": [
+            "owl:Transitive",
+            "owl:Reflexive"
+        ],
+        "R41": [
+            "owl:Reflexive"
+        ],
+        "R42": [
+            "owl:Symmetric"
+        ],
+        "R43": [],
+        "R44": [],
+        "R45": [
+            "owl:Reflexive"
+        ],
+        "R46": [
+            "owl:Reflexive"
+        ],
+        "R47": [],
+        "R48": [
+            "owl:Symmetric"
+        ],
+        "R49": [],
+        "R50": [
+            "owl:Symmetric"
+        ]
+    },
+    "reflexive_relations": [
+        "R8",
+        "R46",
+        "R5",
+        "R40",
+        "R35",
+        "R39",
+        "R9",
+        "R41",
+        "R15",
+        "R45",
+        "R27",
+        "R38",
+        "R12",
+        "R2",
+        "R34"
+    ],
+    "irreflexive_relations": [],
+    "symmetric_relations": [
+        "R35",
+        "R48",
+        "R37",
+        "R6",
+        "R24",
+        "R42",
+        "R20",
+        "R50",
+        "R14",
+        "R33",
+        "R1",
+        "R28",
+        "R36",
+        "R21",
+        "R15"
+    ],
+    "asymmetric_relations": [],
+    "functional_relations": [],
+    "inversefunctional_relations": [],
+    "transitive_relations": [
+        "R31",
+        "R22",
+        "R18",
+        "R40",
+        "R14"
+    ],
+    "inverseof_relations": [
+        "R47",
+        "R44",
+        "R43",
+        "R32",
+        "R30",
+        "R29",
+        "R26",
+        "R25",
+        "R23",
+        "R19",
+        "R17",
+        "R16",
+        "R13",
+        "R11",
+        "R10",
+        "R7"
+    ],
+    "subrelations": [
+        "R2",
+        "R5",
+        "R6",
+        "R8",
+        "R9",
+        "R12",
+        "R15",
+        "R27"
+    ],
+    "rel2inverse": {
+        "R47": "R44",
+        "R44": "R47",
+        "R43": "R32",
+        "R32": "R43",
+        "R30": "R29",
+        "R29": "R30",
+        "R26": "R25",
+        "R25": "R26",
+        "R23": "R19",
+        "R19": "R23",
+        "R17": "R16",
+        "R16": "R17",
+        "R13": "R11",
+        "R11": "R13",
+        "R10": "R7",
+        "R7": "R10"
+    },
+    "rel2dom": {
+        "R1": "C23",
+        "R3": "C6",
+        "R4": "C14",
+        "R6": "C38",
+        "R7": "C47",
+        "R10": "C36",
+        "R11": "C17",
+        "R13": "C40",
+        "R14": "C9",
+        "R16": "C31",
+        "R17": "C27",
+        "R18": "C35",
+        "R19": "C50",
+        "R23": "C30",
+        "R20": "C1",
+        "R21": "C38",
+        "R22": "C19",
+        "R24": "C30",
+        "R25": "C49",
+        "R26": "C7",
+        "R28": "C21",
+        "R29": "C13",
+        "R30": "C46",
+        "R31": "C6",
+        "R32": "C45",
+        "R43": "C32",
+        "R33": "C10",
+        "R36": "C9",
+        "R37": "C17",
+        "R42": "C27",
+        "R44": "C47",
+        "R47": "C21"
+    },
+    "rel2range": {
+        "R1": "C23",
+        "R3": "C30",
+        "R4": "C25",
+        "R6": "C38",
+        "R7": "C36",
+        "R10": "C47",
+        "R11": "C40",
+        "R13": "C17",
+        "R14": "C9",
+        "R16": "C27",
+        "R17": "C31",
+        "R18": "C35",
+        "R19": "C30",
+        "R23": "C50",
+        "R20": "C1",
+        "R21": "C38",
+        "R22": "C19",
+        "R24": "C30",
+        "R25": "C7",
+        "R26": "C49",
+        "R28": "C21",
+        "R29": "C46",
+        "R30": "C13",
+        "R31": "C6",
+        "R32": "C32",
+        "R43": "C45",
+        "R33": "C10",
+        "R36": "C9",
+        "R37": "C17",
+        "R42": "C27",
+        "R44": "C21",
+        "R47": "C47"
+    },
+    "rel2superrel": {
+        "R2": "R5",
+        "R5": "R8",
+        "R6": "R21",
+        "R8": "R9",
+        "R9": "R12",
+        "R12": "R27",
+        "R15": "R35",
+        "R27": "R34"
+    }
+}

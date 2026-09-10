@@ -1,0 +1,20 @@
+{
+    "user_parameters": {
+        "schema": "template",
+        "num_entities": 3000,
+        "num_triples": 30000,
+        "relation_balance_ratio": 0.9,
+        "prop_untyped_entities": 0.0,
+        "avg_depth_specific_class": 2.0,
+        "multityping": false,
+        "avg_multityping": 1.0
+    },
+    "statistics": {
+        "num_entities": 3000,
+        "num_instantiated_relations": 37,
+        "num_triples": 30000,
+        "prop_untyped_entities": 0.0,
+        "avg_depth_specific_class": 1.7326666666666666,
+        "avg_multityping": 1.0
+    }
+}
