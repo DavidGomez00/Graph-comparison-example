@@ -384,5 +384,5 @@ if __name__ == "__main__":
         value_columns=["pairs_real", "pairs_pygraft"],
         labels=["Real KG", "Synthetic KG"],
         title="Subject-Object Pairs per Predicate",
-        save_path="relation_pairs.png",
+        save_path="plots/relation_pairs.png",
     )

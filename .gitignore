@@ -7,8 +7,7 @@ __pycache__/
 
 # My data
 .data
-plots/*.png
-plots/*.csv
+plots/
 
 # Git repos
 AMIE/
