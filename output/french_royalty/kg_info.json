@@ -1,8 +1,8 @@
 {
     "user_parameters": {
         "schema": "french_royalty",
-        "num_entities": 4429,
-        "num_triples": 10871,
+        "num_entities": 2211,
+        "num_triples": 8633,
         "relation_balance_ratio": 0.7,
         "prop_untyped_entities": 0.0,
         "avg_depth_specific_class": 1.0,
@@ -10,9 +10,9 @@
         "avg_multityping": 1.0
     },
     "statistics": {
-        "num_entities": 2156,
+        "num_entities": 1123,
         "num_instantiated_relations": 7,
-        "num_triples": 10871,
+        "num_triples": 8633,
         "prop_untyped_entities": 0.0,
         "avg_depth_specific_class": 1.0,
         "avg_multityping": 1.0

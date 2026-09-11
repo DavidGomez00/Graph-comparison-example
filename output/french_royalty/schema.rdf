@@ -14,7 +14,9 @@
   </owl:Ontology>
 
   <!-- Classes -->
-  <owl:Class rdf:about="http://pygraft.t/Person"/>
+  <owl:Class rdf:about="http://pygraft.t/Person">
+    <rdfs:subClassOf rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  </owl:Class>
 
   <owl:Class 
     rdf:about="http://pygraft.t/PlaceholderClass" 

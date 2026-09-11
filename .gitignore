@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+.python-version
 
 # Local settings
 .claude
@@ -12,6 +13,7 @@ plots/
 # Git repos
 AMIE/
 pygraft/
+VANILLA/
 
 # Other
 *.jar

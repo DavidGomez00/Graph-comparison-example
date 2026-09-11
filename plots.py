@@ -125,6 +125,7 @@ def plot_column_histograms_comparison(
     csv_paths: list[str],
     columns: str | list[str],
     labels: list[str] | None = None,
+    exclude_categories: list[str] | None = None,
     bins: int = 30,
     ncols: int = 1,
     figsize_per_plot: tuple[float, float] = (4, 3),
@@ -171,6 +172,9 @@ def plot_column_histograms_comparison(
         missing = [c for c in columns if c not in df.columns]
         if missing:
             raise ValueError(f"Column(s) not found in {path}: {missing}")
+
+    if exclude_categories:
+        dfs = [df[~df[columns].astype(str).isin(exclude_categories)] for df in dfs]
 
     nrows = math.ceil(len(columns) / ncols)
     fig, axes = plt.subplots(
@@ -382,23 +386,24 @@ def plot_pair_counts_comparison(
 
 
 if __name__ == "__main__":
-    # fig = plot_column_histograms_comparison(
-    #     csv_paths=[
-    #         "plots/office_nodes.csv",
-    #         "plots/office_pygraft_nodes.csv",
-    #     ],
-    #     columns=["Indegree", "Outdegree"],
-    #     labels=["Real KG", "Synthetic KG"],
-    #     bins=20,
-    #     ncols=2,
-    #     save_path="Degree_histogram_comparison.png",
-    # )
-
-    plot_pair_counts_comparison(
-        csv_path="plots/pair_distributions.csv",
-        category_column="relation",
-        value_columns=["pairs_real", "pairs_pygraft"],
+    fig = plot_column_histograms_comparison(
+        csv_paths=[
+            "plots/french_royalty_nodes.csv",
+            "plots/french_royalty_pygraft_nodes.csv",
+        ],
+        columns=["Indegree", "Outdegree"],
         labels=["Real KG", "Synthetic KG"],
-        save_path="plots/ex_relation_pairs.png",
+        bins=20,
+        ncols=2,
+        save_path="Degree_histogram_comparison.png",
         exclude_categories=["type"],
     )
+
+    # plot_pair_counts_comparison(
+    #     csv_path="plots/pair_distributions.csv",
+    #     category_column="relation",
+    #     value_columns=["pairs_real", "pairs_pygraft"],
+    #     labels=["Real KG", "Synthetic KG"],
+    #     save_path="plots/ex_relation_pairs.png",
+    #     exclude_categories=["type"],
+    # )
