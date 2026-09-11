@@ -33,16 +33,20 @@ prop_inverse_functional_relations: 0.0
 prop_subproperties: 0.0
 
 # KNOWLEDGE GRAPH ARGS ##
-num_entities: 4429
-num_triples: 10871
+# .data/french_royalty/french_royalty.tsv has 2211 unique entities (every one
+# of them carries an explicit `type Person` triple -- unlike the earlier,
+# uncorrected dataset, this one is fully typed) and 6422 relation triples
+# (child 1897, parent 1239, spouse 1152, father 658, mother 534, successor
+# 471, predecessor 471). num_triples = 6422 relation + 2211 type = 8633.
+num_entities: 2211
+num_triples: 8633
 fast_gen: true
 oversample: false
-# Real per-relation triple counts are skewed. PyGraft distributes triples across relations as
-# random weights of magnitude (1 - relation_balance_ratio); anything below
-# ~0.7 has a non-trivial chance of zeroing out a relation entirely over 8
-# buckets (checked empirically: 0.6 -> 7/200 runs drop a relation to 0,
-# 0.7 -> 0/200). 0.7 is the lowest ratio that reliably keeps all 8 relations
-# present while still giving a clearly imbalanced (not uniform) distribution.
+# Real per-relation triple counts are skewed (child 1897 vs
+# successor/predecessor 471, ~4x. PyGraft distributes triples across relations as random weights of
+# magnitude (1 - relation_balance_ratio); anything below ~0.7 has a
+# non-trivial chance of zeroing out a relation entirely over these 7
+# relations (checked empirically, see docs/Determining relation distribution).
 relation_balance_ratio: 0.7
 prop_untyped_entities: 0.0
 avg_depth_specific_class: 1.0

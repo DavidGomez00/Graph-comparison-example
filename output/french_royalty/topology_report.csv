@@ -1,0 +1,14 @@
+metric,value
+real_nodes,2204
+real_edges,6422
+real_zero_in_degree_nodes,1
+real_zero_out_degree_nodes,974
+synthetic_nodes,1123
+synthetic_edges,8633
+synthetic_zero_in_degree_nodes,1
+synthetic_zero_out_degree_nodes,0
+js_divergence_in_degree,0.4827754813144567
+js_divergence_out_degree,0.5045913944965537
+js_divergence_pairs_per_predicate,0.11291031192239
+spectral_distance,603.391699942934
+normalized_spectral_distance,45.6317054019366

@@ -3,18 +3,13 @@ import yaml
 import pygraft
 from utils import parse_result
 
-schema_name = "office"
+schema_name = "french_royalty"
 config_file = f"output/{schema_name}/{schema_name}.yml"
 
-# pygraft.create_template()
-# pygraft.generate_schema("template.yml")
 pygraft.generate_kg(config_file)
 
-# Parse resulted graph into .tsv and .ttl files. n_entities must cover the
-# schema's full E1..E<num_entities> range (parse_result's own default of 15
-# only works by coincidence for small schemas -- it would silently drop
-# almost everything for a schema like french_royalty, with num_entities:
-# 4429), so it's read from the same config passed to generate_kg above.
+# Parse resulted graph into .tsv and .ttl files.
+# Determine the number of entities in the generated graph
 with open(config_file) as f:
     num_entities = yaml.safe_load(f)["num_entities"]
 

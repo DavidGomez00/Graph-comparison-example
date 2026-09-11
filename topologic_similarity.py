@@ -22,8 +22,10 @@ axes:
 Lower values indicate greater similarity for all three metrics.
 """
 
+import csv
 import re
 from collections import Counter
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
@@ -368,21 +370,23 @@ def calculate_spectral_distance(G_real, G_synthetic, normalized: bool = True):
     return distance
 
 
-if __name__ == "__main__":
-    # Replace these paths with your own files
-    real_file = "data/office/office.tsv"
-    synthetic_file = "data/office/office_pygraft.tsv"
+def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=None):
+    """
+    Compute the full topology comparison between two graphs and export the
+    results to a CSV file (metric, value columns) instead of printing them.
 
-    # Predicates to leave out of every measurement below. "type" edges only
-    # encode rdf:type-like class membership (entity -> class name), not a
-    # relationship between two real-world entities, and dominate degree and
-    # spectral comparisons in a graph this small. Set to None (or an empty
-    # set) to include every predicate instead.
-    exclude_predicates = {"type"}
-
-    print("Loading graphs...")
+    Args:
+        real_file: Path to the "real" graph's TSV edge-list file.
+        synthetic_file: Path to the "synthetic" graph's TSV edge-list file.
+        output_csv: Path to write the CSV report to. Parent directories are
+            created as needed; an existing file at this path is overwritten.
+        exclude_predicates: Optional iterable of predicate/relation labels
+            to leave out of every measurement (see `load_graph_tsv`).
+    """
     real_graph = load_graph_tsv(real_file, exclude_predicates=exclude_predicates)
-    synthetic_graph = load_graph_tsv(synthetic_file, exclude_predicates=exclude_predicates)
+    synthetic_graph = load_graph_tsv(
+        synthetic_file, exclude_predicates=exclude_predicates
+    )
 
     # Diagnostic only: count nodes that are pure sources (in-degree 0) or
     # pure sinks (out-degree 0) in each graph.
@@ -391,20 +395,9 @@ if __name__ == "__main__":
     zero_in_synth = sum(1 for _, d in synthetic_graph.in_degree() if d == 0)
     zero_out_synth = sum(1 for _, d in synthetic_graph.out_degree() if d == 0)
 
-    print(
-        f"Real graph: {real_graph.number_of_nodes()} nodes, {real_graph.number_of_edges()} edges, {zero_in_real} nodes with in-degree=0, {zero_out_real} nodes with out-degree=0."
-    )
-    print(
-        f"Synthetic graph: {synthetic_graph.number_of_nodes()} nodes, {synthetic_graph.number_of_edges()} edges, {zero_in_synth} nodes with in-degree=0, {zero_out_synth} nodes with out-degree=0."
-    )
-    print("-" * 50)
-
     # 1. Jensen-Shannon divergence (values closer to 0 = greater similarity)
     js_in = calculate_js_divergence(real_graph, synthetic_graph, "in")
     js_out = calculate_js_divergence(real_graph, synthetic_graph, "out")
-
-    print(f"JS divergence (in-degree):  {js_in:.4f}")
-    print(f"JS divergence (out-degree): {js_out:.4f}")
 
     # 1.5. Jensen-Shannon divergence for the pairs-per-predicate distribution
     predicate_counts_real = count_predicate_pairs(
@@ -417,8 +410,6 @@ if __name__ == "__main__":
         predicate_counts_real, predicate_counts_synth
     )
 
-    print(f"JS divergence (pairs-per-predicate): {js_predicates:.4f}")
-
     # 2. Spectral distance (values closer to 0 = greater global structural similarity)
     spectral_distance = calculate_spectral_distance(
         real_graph, synthetic_graph, normalized=False
@@ -427,5 +418,46 @@ if __name__ == "__main__":
         real_graph, synthetic_graph, normalized=True
     )
 
-    print(f"Spectral distance:          {spectral_distance:.4f}")
-    print(f"Norm. Spectral distance:    {normalized_spectral_dist:.4f}")
+    rows = [
+        ("real_nodes", real_graph.number_of_nodes()),
+        ("real_edges", real_graph.number_of_edges()),
+        ("real_zero_in_degree_nodes", zero_in_real),
+        ("real_zero_out_degree_nodes", zero_out_real),
+        ("synthetic_nodes", synthetic_graph.number_of_nodes()),
+        ("synthetic_edges", synthetic_graph.number_of_edges()),
+        ("synthetic_zero_in_degree_nodes", zero_in_synth),
+        ("synthetic_zero_out_degree_nodes", zero_out_synth),
+        ("js_divergence_in_degree", js_in),
+        ("js_divergence_out_degree", js_out),
+        ("js_divergence_pairs_per_predicate", js_predicates),
+        ("spectral_distance", spectral_distance),
+        ("normalized_spectral_distance", normalized_spectral_dist),
+    ]
+
+    output_path = Path(output_csv)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["metric", "value"])
+        writer.writerows(rows)
+
+
+if __name__ == "__main__":
+    # Replace these paths with your own files
+    real_file = ".data/french_royalty/french_royalty.tsv"
+    synthetic_file = ".data/french_royalty/french_royalty_pygraft.tsv"
+    output_csv = "output/french_royalty/topology_report.csv"
+
+    # Predicates to leave out of every measurement below. "type" edges only
+    # encode rdf:type-like class membership (entity -> class name), not a
+    # relationship between two real-world entities, and dominate degree and
+    # spectral comparisons in a graph this small. Set to None (or an empty
+    # set) to include every predicate instead.
+    exclude_predicates = {"type"}
+
+    topology_report(
+        real_file=real_file,
+        synthetic_file=synthetic_file,
+        output_csv=output_csv,
+        exclude_predicates=exclude_predicates,
+    )
