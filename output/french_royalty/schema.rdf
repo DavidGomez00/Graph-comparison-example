@@ -1,113 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Hand-customized schema based on generated_schema.rdf to represent
-     the French royalty graph.
-
-     french_royalty_no_literals.tsv has 2212 `type` triples, one per typed
-     entity, all pointing to the class `Person` -> modeled below as a class
-     hierarchy, the same way output/mario/schema.rdf models `Character`.
-     4429 entities appear in total, so 2212/4429 (~50%) are left untyped
-     (see prop_untyped_entities in FR.yml) while still taking part in
-     relations, matching the real data (many subjects/objects only ever show
-     up as the other end of a father/mother/child/... triple, without an
-     explicit `type Person` triple of their own). -->
+     the French royalty graph. -->
 <rdf:RDF
-   xmlns:dcterms="http://purl.org/dc/terms/"
    xmlns:owl="http://www.w3.org/2002/07/owl#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 >
   <!-- Ontology -->
-  <rdf:Description rdf:about="http://pygraf.t/">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
-    <dcterms:license rdf:resource="https://creativecommons.org/publicdomain/zero/1.0/"/>
-  </rdf:Description>
+  <owl:Ontology rdf:about="http://pygraft.t/">
+    <rdfs:comment xml:lang="es">Reference ontology for a non-literal 
+      French Royalty KG.</rdfs:comment>
+  </owl:Ontology>
 
   <!-- Classes -->
-  <rdf:Description rdf:about="http://pygraf.t/Person">
-    <!--Every typed entity in french_royalty_no_literals.tsv is a Person
-    (2212/2212 `type` triples). This is the only class that is ever
-    instantiated.-->
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-  </rdf:Description>
+  <owl:Class rdf:about="http://pygraft.t/Person"/>
 
-  <rdf:Description rdf:about="http://pygraf.t/PlaceholderClass">
-    <!--PyGraft requires at least 2 classes to run. This one is never referenced
-    by any relation's domain/range and, with avg_depth_specific_class: 1.0 in
-    the KG config, is never assigned to any instance either.-->
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdfs:subClassOf rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+  <owl:Class 
+    rdf:about="http://pygraft.t/PlaceholderClass" 
+    rdf:comment="Pygraft needs a minimum of 2 classes to 
+    work."
+  />
+
 
   <!-- Relations -->
-  <!-- Generic parent/child, inverses of one another. -->
-  <rdf:Description rdf:about="http://pygraf.t/parent">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/parent">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <owl:inverseOf rdf:resource="http://pygraf.t/child"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 
-  <rdf:Description rdf:about="http://pygraf.t/child">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/child">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <owl:inverseOf rdf:resource="http://pygraf.t/parent"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 
-  <!-- father/mother are gender-specific narrowings of parent. -->
-  <rdf:Description rdf:about="http://pygraf.t/father">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/father">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdfs:subPropertyOf rdf:resource="http://pygraf.t/parent"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 
-  <rdf:Description rdf:about="http://pygraf.t/mother">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/mother">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdfs:subPropertyOf rdf:resource="http://pygraf.t/parent"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 
-  <!-- spouse is symmetric; marriedTo is a (rarer, 20/6442 triples) synonym
-       modeled as its narrower subproperty. -->
-  <rdf:Description rdf:about="http://pygraf.t/spouse">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/spouse">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 
-  <rdf:Description rdf:about="http://pygraf.t/marriedTo">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/successor">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
-    <rdfs:subPropertyOf rdf:resource="http://pygraf.t/spouse"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 
-  <!-- successor/predecessor, inverses of one another. -->
-  <rdf:Description rdf:about="http://pygraf.t/successor">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  <owl:ObjectProperty rdf:about="http://pygraft.t/predecessor">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <owl:inverseOf rdf:resource="http://pygraf.t/predecessor"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
-
-  <rdf:Description rdf:about="http://pygraf.t/predecessor">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-    <owl:inverseOf rdf:resource="http://pygraf.t/successor"/>
-    <rdfs:domain rdf:resource="http://pygraf.t/Person"/>
-    <rdfs:range rdf:resource="http://pygraf.t/Person"/>
-  </rdf:Description>
+    <rdfs:domain>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class rdf:about="http://pygraft.t/Person"/>
+    </rdfs:range>
+  </owl:ObjectProperty>
 </rdf:RDF>

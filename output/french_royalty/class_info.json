@@ -9,22 +9,17 @@
     "class_inheritance_ratio": 1.0,
     "direct_class2subclasses": {
         "owl:Thing": [
-            "Person"
-        ],
-        "Person": [
+            "Person",
             "PlaceholderClass"
         ]
     },
     "direct_class2superclass": {
         "Person": "owl:Thing",
-        "PlaceholderClass": "Person"
+        "PlaceholderClass": "owl:Thing"
     },
     "transitive_class2subclasses": {
         "owl:Thing": [
             "Person",
-            "PlaceholderClass"
-        ],
-        "Person": [
             "PlaceholderClass"
         ]
     },
@@ -33,7 +28,6 @@
             "owl:Thing"
         ],
         "PlaceholderClass": [
-            "Person",
             "owl:Thing"
         ]
     },
@@ -43,14 +37,12 @@
     "class2disjoints_extended": {},
     "layer2classes": {
         "1": [
-            "Person"
-        ],
-        "2": [
+            "Person",
             "PlaceholderClass"
         ]
     },
     "class2layer": {
         "Person": 1,
-        "PlaceholderClass": 2
+        "PlaceholderClass": 1
     }
 }

@@ -4,7 +4,7 @@ import pygraft
 from utils import parse_result
 
 schema_name = "office"
-config_file = f"data/{schema_name}.yml"
+config_file = f"output/{schema_name}/{schema_name}.yml"
 
 # pygraft.create_template()
 # pygraft.generate_schema("template.yml")
@@ -20,7 +20,7 @@ with open(config_file) as f:
 
 parse_result(
     full_graph=f"output/{schema_name}/full_graph.rdf",
-    ttl_file=f"data/{schema_name}/{schema_name}_pygraft.ttl",
-    tsv_file=f"data/{schema_name}/{schema_name}_pygraft.tsv",
+    ttl_file=f".data/{schema_name}/{schema_name}_pygraft.ttl",
+    tsv_file=f".data/{schema_name}/{schema_name}_pygraft.tsv",
     n_entities=num_entities + 1,
 )
