@@ -86,6 +86,27 @@ def build_command(args: argparse.Namespace) -> list[str]:
     return cmd
 
 
+def format_body(body_text: str) -> str:
+    """Join body atoms with two spaces, one space within each atom.
+
+    AMIE separates subject/predicate/object tokens with two spaces
+    uniformly, so atom boundaries aren't visible from spacing alone --
+    tokens are grouped into triples (or single tokens for "!="
+    constraints) to recover them.
+    """
+    tokens = body_text.split()
+    atoms = []
+    i = 0
+    while i < len(tokens):
+        if "!=" in tokens[i]:
+            atoms.append(tokens[i])
+            i += 1
+        else:
+            atoms.append(" ".join(tokens[i : i + 3]))
+            i += 3
+    return "  ".join(atoms)
+
+
 def parse_amie_output(text: str) -> list[dict]:
     """Parse AMIE3's stdout table into a list of rule dicts."""
     rules = []
@@ -113,7 +134,7 @@ def parse_amie_output(text: str) -> list[dict]:
         rules.append(
             {
                 "rule": " ".join(rule_text.split()),
-                "body": " ".join(body.split()),
+                "body": format_body(body),
                 "head": " ".join(head.split()),
                 "head_coverage": hc,
                 "std_confidence": std_conf,
