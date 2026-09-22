@@ -41,12 +41,12 @@ def export_graphml(tsv_file, output_path, exclude_predicates=None):
 if __name__ == "__main__":
     # Replace these paths with your own files
     export_graphml(
-        tsv_file=".data/french_royalty/normalized/french_royalty.tsv",
+        tsv_file="data/french_royalty/normalized/french_royalty.tsv",
         output_path="output/french_royalty/normalized.graphml",
         exclude_predicates={"type"},
     )
     export_graphml(
-        tsv_file=".data/french_royalty/skgg/french_royalty.tsv",
+        tsv_file="data/french_royalty/skgg/french_royalty.tsv",
         output_path="output/french_royalty/skgg.graphml",
         exclude_predicates={"type"},
     )

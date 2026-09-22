@@ -141,10 +141,10 @@ def evaluate(target_file, methods, output_csv, exclude_predicates=None):
 
 if __name__ == "__main__":
     # Replace these paths with your own files
-    target_file = ".data/french_royalty/normalized/french_royalty.tsv"
+    target_file = "data/french_royalty/normalized/french_royalty.tsv"
     methods = {
-        "pygraft": ".data/french_royalty/pygraft/french_royalty.tsv",
-        "skgg": ".data/french_royalty/skgg/french_royalty.tsv",
+        "pygraft": "data/french_royalty/pygraft/french_royalty.tsv",
+        "skgg": "data/french_royalty/skgg/french_royalty.tsv",
     }
     output_csv = "output/french_royalty/evaluation.csv"
 

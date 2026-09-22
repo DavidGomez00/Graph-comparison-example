@@ -8,7 +8,7 @@ Tools for comparing knowledge graphs (KGs) both structurally and logically (Horn
 
 Add a summary for French Royalty dataset.
 
-`.data/french_royalty/` holds four variants of this same graph:
+`data/french_royalty/` holds four variants of this same graph:
 
 - `source/`: Original extract `source/french_royalty.pre-corrections.tsv` and non-literal version at `source/french_royalty.tsv`.
 - `normalized/french_royalty.tsv`: Normalized graph generated from the non-literal version of French Royalty. I was normalized using [VANILLA](add doi).

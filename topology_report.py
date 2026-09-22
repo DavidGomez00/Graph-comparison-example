@@ -733,8 +733,8 @@ def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=No
 
 if __name__ == "__main__":
     # Replace these paths with your own files
-    real_file = ".data/french_royalty/source/french_royalty.tsv"
-    synthetic_file = ".data/french_royalty/pygraft/french_royalty.tsv"
+    real_file = "data/french_royalty/source/french_royalty.tsv"
+    synthetic_file = "data/french_royalty/pygraft/french_royalty.tsv"
     output_csv = "output/french_royalty/topology_report.csv"
 
     # Predicates to leave out of every measurement below

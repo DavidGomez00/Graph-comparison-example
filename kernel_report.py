@@ -116,8 +116,8 @@ def kernel_report(
 
 if __name__ == "__main__":
     # Replace these paths with your own files
-    real_file = ".data/french_royalty/normalized/french_royalty.tsv"
-    synthetic_file = ".data/french_royalty/pygraft/french_royalty.tsv"
+    real_file = "data/french_royalty/normalized/french_royalty.tsv"
+    synthetic_file = "data/french_royalty/pygraft/french_royalty.tsv"
     output_csv = "output/french_royalty/kernel_report.csv"
 
     # Predicates to leave out of every measurement below

@@ -15,8 +15,9 @@ Its plain-text stdout table is parsed and written out as CSV with columns:
 Example (see docs/Getting_started.md and README.md for this repo's own
 worked examples):
 
-    python run_amie.py .data/lung_cancer/lung_cancer.nt \\
-        -o output/lung_cancer_rules.csv
+    python run_amie.py data/french_royalty/normalized/french_royalty.tsv \\
+        -o output/french_royalty/normalized_rules.csv \\
+        --mins 1 --minis 1 --minhc 0
 
 With no threshold flags, AMIE's own defaults are used (-mins/-minis 100,
 -minhc 0.01) which is appropriate for large knowledge bases. For small or
