@@ -95,7 +95,7 @@ All 8 are irreflexive. Running PyGraft's KG generator against these files
 a logically consistent KG with all 4429 entities and all 8 relations
 represented. It's parsed down to `.data/french_royalty/pygraft.tsv`/`.ttl`
 the same way Mario's is (see `pygraft_generation.ipynb`), but not yet copied
-to `public_data/` or run through `graph_comparison.ipynb`.
+to `public_data/` or run through `topology_report.py`.
 
 Two aspects of the real data don't survive the round-trip, documented as
 comments in `french_royalty.yml`:
@@ -240,7 +240,7 @@ target graph into a comparable synthetic one:
    come up short of the schema's real relation count on a given run (see
    "Office schema" above) -- just re-run until it doesn't.
 7. Compare structurally against the target file (entity/class/relation
-   counts, and optionally `topologic_similarity.py` after converting both to
+   counts, and optionally `topology_report.py` after converting both to
    TSV) -- PyGraft always names synthetic entities generically (`E1`, `E2`,
    ...), so this is a structural/statistical match, not a literal
    triple-for-triple copy.
@@ -270,39 +270,37 @@ range, and the per-relation triple budget from `relation_balance_ratio`.
 
 ## Comparing the graphs
 
-Currently run for Mario only ([`graph_comparison.ipynb`](graph_comparison.ipynb));
-the French royalty synthetic graph is generated
-(`output/french_royalty/full_graph.rdf`) and parsed to
-`.data/french_royalty/pygraft.tsv`, but hasn't been copied to `public_data/`
-or run through this notebook yet. Takes the paths to any two graph files
-(RDF or plain `.tsv`/`.csv` triples, here the target and synthetic Mario
-graphs) and compares them on
-two levels:
+[`topology_report.py`](topology_report.py) takes the paths to a "real" and a
+"synthetic" TSV edge-list file (Source, Interaction, Target columns) and
+writes a CSV report comparing them on four axes:
 
-**Structural metrics** (`compare_graphs`): in/out-degree (from the raw
-triples), and edges/triangles/clustering coefficient computed on a simple
-undirected projection of the graph, including a multiplicity-weighted
-edge-triangle count that accounts for parallel relations between the same
-pair of entities. See the notebook's markdown cells for exact definitions.
-Like `compare_rules` below, `compare_graphs` (and the underlying
-`load_triples`/`graph_metrics`) takes an `exclude_predicates` argument: any
-triple using one of those predicates is dropped before the metrics are
-computed. Pass `{"type"}` to ignore "a type b" relations, which are often
-irrelevant since these graphs only have one type.
+- **Spectral distance**: Euclidean distance between the sorted eigenvalues
+  of each graph's (normalized) Laplacian -- sensitive to global structure
+  (connectivity, community structure) rather than individual node degrees.
+- **JS-divergence (degrees)**: Jensen-Shannon divergence between the two
+  graphs' in-/out-degree distributions.
+- **JS-divergence (predicates)**: Jensen-Shannon divergence between how
+  subject-object pairs are distributed across predicates -- predicate labels
+  are shared vocabulary between a real graph and a synthetic one generated
+  from its schema, so this captures whether each relation type is exercised
+  proportionally as often in both.
+- **Structural metrics**: undirected-projection edge count, node/edge
+  triangles (the latter multiplicity-weighted, accounting for parallel
+  relations between the same pair of entities), clustering coefficient, and
+  max/std in-/out-degree, reported side by side (real vs. synthetic) rather
+  than as a single similarity score. See the module's docstring and
+  `calculate_structural_metrics` for exact definitions.
 
-**Global/logical metrics** (`compare_rules`): both graphs are run through
-AMIE3 (via [`run_amie.py`](run_amie.py)) to mine Horn rules such as
-`?a servantOf ?b => ?a allyOf ?b`. Since both graphs share the same relation
-names, mined rule *patterns* (canonicalized by variable order, so equivalent
-patterns compare equal) are directly comparable between the two graphs.
-`compare_rules` outer-joins both rule sets on their canonical pattern and
-reports shared vs. unique patterns, Jaccard similarity, and each side's head
-coverage/confidence/support side by side. It takes the same
-`exclude_predicates` argument, dropping any mined rule that uses one of
-those predicates anywhere in its body or head; `type` rules dominate AMIE's
-output (mostly "neighbor's type ⇒ own type"), so `exclude_predicates={"type"}`
-is a quick way to zoom in on the rules relating the KG's "real" relations to
-each other instead.
+All of the above take an `exclude_predicates` argument: any triple using one
+of those predicates is dropped before the metrics are computed. Pass
+`{"type"}` to ignore "a type b" relations, which are often irrelevant since
+these graphs only have one type.
+
+Separately, [`run_amie.py`](run_amie.py) can mine Horn rules (e.g.
+`?a servantOf ?b => ?a allyOf ?b`) from either graph via AMIE3 and export
+them to CSV -- useful for inspecting a graph's logical/relational structure
+on its own, though there is currently no automated tooling in this repo for
+comparing two graphs' mined rule sets against each other.
 
 ## Findings
 

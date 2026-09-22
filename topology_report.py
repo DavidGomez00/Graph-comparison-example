@@ -18,8 +18,16 @@ axes:
    two graphs (the synthetic graph is generated from the real graph's
    schema), so this one captures whether each relation type is exercised
    proportionally as often in both, not just whether degree shapes match.
+4. Structural metrics: undirected-projection edge count, node/edge
+   triangles, clustering coefficient, and max/std in- and out-degree.
+   These describe local closure structure (how much a graph's neighborhoods
+   close into triangles) and degree-skew (how hub-like the graph is),
+   neither of which the spectral or JS-divergence axes above capture on
+   their own.
 
-Lower values indicate greater similarity for all three metrics.
+Lower values indicate greater similarity for all three JS-divergence and
+spectral-distance metrics; the structural metrics are reported side by side
+(real vs. synthetic) rather than as a single similarity score.
 """
 
 import csv
@@ -370,6 +378,98 @@ def calculate_spectral_distance(G_real, G_synthetic, normalized: bool = True):
     return distance
 
 
+def _weighted_edge_triangles(U, U_multi):
+    """
+    Count triangles in `U`, weighted by each side's edge multiplicity in
+    `U_multi`.
+
+    For every triad `{u, v, w}` that forms a triangle in `U`, the
+    contribution is `mult(u, v) * mult(v, w) * mult(u, w)` (the multiplicity
+    being the number of parallel edges -- i.e. relations -- connecting that
+    pair in `U_multi`), summed over all triangles.
+
+    This is deliberately NOT implemented as `itertools.combinations(U.nodes(),
+    3)` filtered by `has_edge` three times over, which is the direct
+    translation of the triangle definition but costs O(n^3) -- intractable
+    for graphs with thousands of nodes (this repo's own datasets, e.g.
+    french_royalty, are in that range). Instead this uses the standard
+    "forward" triangle-listing algorithm (Schank & Wagner): nodes are
+    ordered (here by degree, ties broken by node id, for a stable order),
+    each node keeps only the neighbors that come after it in that order, and
+    triangles are found by intersecting those "forward" neighbor sets.
+    Every triangle is discovered exactly once this way, in O(m^1.5) instead
+    of O(n^3).
+
+    Args:
+        U: A simple (no parallel edges) `networkx.Graph` -- the undirected
+            projection to find triangles in.
+        U_multi: The corresponding `networkx.MultiGraph` (same nodes/edges as
+            `U`, but with parallel edges preserved) to read multiplicities
+            from via `number_of_edges(u, v)`.
+
+    Returns:
+        The multiplicity-weighted triangle count (int).
+    """
+    order = {n: i for i, n in enumerate(sorted(U.nodes(), key=lambda n: (U.degree(n), n)))}
+    forward_neighbors = {n: {w for w in U[n] if order[w] > order[n]} for n in U.nodes()}
+
+    total = 0
+    for u, u_forward in forward_neighbors.items():
+        for v in u_forward:
+            for w in u_forward & forward_neighbors[v]:
+                total += (
+                    U_multi.number_of_edges(u, v)
+                    * U_multi.number_of_edges(v, w)
+                    * U_multi.number_of_edges(u, w)
+                )
+    return total
+
+
+def calculate_structural_metrics(graph):
+    """
+    Compute local closure and degree-skew metrics for a single graph.
+
+    Args:
+        graph: A `networkx.MultiDiGraph`, as returned by `load_graph_tsv`.
+
+    Returns:
+        A dict with the following keys:
+        - `undirected_edges`: number of edges in the simple (parallel edges
+          collapsed) undirected projection of `graph`. Distinct from
+          `graph.number_of_edges()` (the directed, multi-edge triple count
+          reported elsewhere as `real_edges`/`synthetic_edges`).
+        - `node_triangles`: standard triangle count on the undirected
+          projection -- each closed 3-node triad counted once, regardless of
+          how many relations/directions link its sides.
+        - `edge_triangles`: multiplicity-weighted triangle count (see
+          `_weighted_edge_triangles`); `>= node_triangles`, equal only when
+          no triangle side has more than one connecting edge.
+        - `clustering_coefficient`: global transitivity of the undirected
+          projection (`3 * node_triangles / wedges`).
+        - `max_in_degree`, `max_out_degree`, `std_in_degree`,
+          `std_out_degree`: summary stats of `graph`'s in-/out-degree
+          sequences.
+    """
+    in_degrees = np.array([d for _, d in graph.in_degree()])
+    out_degrees = np.array([d for _, d in graph.out_degree()])
+
+    U_multi = graph.to_undirected()
+    U = nx.Graph(U_multi)
+
+    node_triangles = sum(nx.triangles(U).values()) // 3
+
+    return {
+        "undirected_edges": U.number_of_edges(),
+        "node_triangles": node_triangles,
+        "edge_triangles": _weighted_edge_triangles(U, U_multi),
+        "clustering_coefficient": nx.transitivity(U),
+        "max_in_degree": int(in_degrees.max()) if in_degrees.size else 0,
+        "max_out_degree": int(out_degrees.max()) if out_degrees.size else 0,
+        "std_in_degree": float(in_degrees.std()) if in_degrees.size else 0.0,
+        "std_out_degree": float(out_degrees.std()) if out_degrees.size else 0.0,
+    }
+
+
 def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=None):
     """
     Compute the full topology comparison between two graphs and export the
@@ -418,15 +518,36 @@ def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=No
         real_graph, synthetic_graph, normalized=True
     )
 
+    # 3. Structural metrics (local closure / degree-skew, reported side by
+    # side rather than as a single similarity score)
+    structural_real = calculate_structural_metrics(real_graph)
+    structural_synth = calculate_structural_metrics(synthetic_graph)
+
     rows = [
         ("real_nodes", real_graph.number_of_nodes()),
         ("real_edges", real_graph.number_of_edges()),
         ("real_zero_in_degree_nodes", zero_in_real),
         ("real_zero_out_degree_nodes", zero_out_real),
+        ("real_undirected_edges", structural_real["undirected_edges"]),
+        ("real_node_triangles", structural_real["node_triangles"]),
+        ("real_edge_triangles", structural_real["edge_triangles"]),
+        ("real_clustering_coefficient", structural_real["clustering_coefficient"]),
+        ("real_max_in_degree", structural_real["max_in_degree"]),
+        ("real_max_out_degree", structural_real["max_out_degree"]),
+        ("real_std_in_degree", structural_real["std_in_degree"]),
+        ("real_std_out_degree", structural_real["std_out_degree"]),
         ("synthetic_nodes", synthetic_graph.number_of_nodes()),
         ("synthetic_edges", synthetic_graph.number_of_edges()),
         ("synthetic_zero_in_degree_nodes", zero_in_synth),
         ("synthetic_zero_out_degree_nodes", zero_out_synth),
+        ("synthetic_undirected_edges", structural_synth["undirected_edges"]),
+        ("synthetic_node_triangles", structural_synth["node_triangles"]),
+        ("synthetic_edge_triangles", structural_synth["edge_triangles"]),
+        ("synthetic_clustering_coefficient", structural_synth["clustering_coefficient"]),
+        ("synthetic_max_in_degree", structural_synth["max_in_degree"]),
+        ("synthetic_max_out_degree", structural_synth["max_out_degree"]),
+        ("synthetic_std_in_degree", structural_synth["std_in_degree"]),
+        ("synthetic_std_out_degree", structural_synth["std_out_degree"]),
         ("js_divergence_in_degree", js_in),
         ("js_divergence_out_degree", js_out),
         ("js_divergence_pairs_per_predicate", js_predicates),
@@ -448,11 +569,7 @@ if __name__ == "__main__":
     synthetic_file = ".data/french_royalty/french_royalty_pygraft.tsv"
     output_csv = "output/french_royalty/topology_report.csv"
 
-    # Predicates to leave out of every measurement below. "type" edges only
-    # encode rdf:type-like class membership (entity -> class name), not a
-    # relationship between two real-world entities, and dominate degree and
-    # spectral comparisons in a graph this small. Set to None (or an empty
-    # set) to include every predicate instead.
+    # Predicates to leave out of every measurement below
     exclude_predicates = {"type"}
 
     topology_report(
