@@ -24,10 +24,20 @@ axes:
    close into triangles) and degree-skew (how hub-like the graph is),
    neither of which the spectral or JS-divergence axes above capture on
    their own.
+5. PageRank and local-clustering-coefficient distributions: compared via
+   both Jensen-Shannon divergence and Wasserstein (earth mover's) distance.
+   PageRank captures whether the two graphs create comparably realistic hub
+   nodes (a node's degree alone doesn't say how *important* its neighbors
+   consider it); local clustering coefficient captures the same closure
+   structure as the global `clustering_coefficient` above, but as a full
+   per-node distribution rather than a single averaged scalar, so two graphs
+   with the same global transitivity but very differently-shaped
+   neighborhoods are told apart.
 
-Lower values indicate greater similarity for all three JS-divergence and
-spectral-distance metrics; the structural metrics are reported side by side
-(real vs. synthetic) rather than as a single similarity score.
+Lower values indicate greater similarity for all JS-divergence,
+Wasserstein-distance, and spectral-distance metrics; the structural metrics
+are reported side by side (real vs. synthetic) rather than as a single
+similarity score.
 """
 
 import csv
@@ -39,6 +49,7 @@ import networkx as nx
 import numpy as np
 from scipy.linalg import eigvalsh
 from scipy.spatial.distance import jensenshannon
+from scipy.stats import wasserstein_distance
 
 # Matches the position just before an internal capital letter, e.g. the "T"
 # in "assignedTo" -- used to canonicalize predicate names (see
@@ -147,23 +158,42 @@ def _normalize_predicate(predicate):
     """
     Canonicalize a predicate/relation label for cross-graph comparison.
 
-    A real-world graph and a pygraft-synthesized one can use different
-    naming conventions for what is semantically the same relation -- e.g.
-    the office ontology's camelCase `assignedTo`/`reportsTo` vs. pygraft's
-    snake_case `assigned_to`/`reports_to`. Comparing raw predicate strings
-    would treat these as unrelated categories and understate how similar
-    the predicate-pair distributions actually are. Inserting an underscore
-    before each internal capital letter and lowercasing the result collapses
-    both conventions to the same key (`assignedTo` -> `assigned_to`,
-    `assigned_to` -> `assigned_to`, unchanged).
+    Different graph variants spell the same relation differently in two
+    independent ways this collapses:
+
+    1. **Naming convention**: a real-world graph and a pygraft-synthesized
+       one can use different conventions for what is semantically the same
+       relation -- e.g. the office ontology's camelCase
+       `assignedTo`/`reportsTo` vs. pygraft's snake_case
+       `assigned_to`/`reports_to`.
+    2. **Full URI vs. bare local name**: some variants spell a predicate as
+       a full URI (e.g. `http://FrenchRoyalty.org/child`, or
+       `http://www.w3.org/2000/01/rdf-schema#type`) while others use just
+       the local name (`child`, `type`). This repo's own french_royalty
+       variants mix both -- `pygraft`/`source` use bare names, `normalized`/
+       `skgg` use full URIs -- so without stripping the namespace first,
+       `_normalize_predicate` would treat every predicate as unique to its
+       side, silently maximizing every predicate-based JS-divergence *and*
+       breaking `exclude_predicates` matching (e.g. `exclude_predicates=
+       {"type"}` would fail to exclude a `rdf-schema#type` URI, leaking
+       type-membership edges into one side's graph but not the other's).
+
+    Comparing raw predicate strings would treat any of the above as unrelated
+    categories and understate how similar the predicate-pair distributions
+    actually are. The local name is taken first (text after the last `/` or
+    `#`, or the whole string if neither appears), then an underscore is
+    inserted before each internal capital letter and the result is
+    lowercased, collapsing every spelling to the same key (`assignedTo` ->
+    `assigned_to`, `http://.../assigned_to` -> `assigned_to`, unchanged).
 
     Args:
-        predicate: A raw predicate/relation label.
+        predicate: A raw predicate/relation label, bare or a full URI.
 
     Returns:
-        The lowercase, snake_case form of `predicate`.
+        The lowercase, snake_case, namespace-stripped form of `predicate`.
     """
-    return _CAMEL_HUMP_RE.sub("_", predicate).lower()
+    local_name = re.split(r"[/#]", predicate)[-1]
+    return _CAMEL_HUMP_RE.sub("_", local_name).lower()
 
 
 def count_predicate_pairs(file_path, exclude_predicates=None):
@@ -378,6 +408,26 @@ def calculate_spectral_distance(G_real, G_synthetic, normalized: bool = True):
     return distance
 
 
+def _undirected_projection(graph):
+    """
+    Derive both undirected views of a `MultiDiGraph` that the structural,
+    clustering, and triangle metrics share.
+
+    Args:
+        graph: A `networkx.MultiDiGraph`, as returned by `load_graph_tsv`.
+
+    Returns:
+        A `(U, U_multi)` tuple: `U_multi` is `graph.to_undirected()` (a
+        `MultiGraph`, direction dropped but parallel edges preserved, so
+        `U_multi.number_of_edges(u, v)` gives the true relation count
+        between `u` and `v`); `U` is the simple projection
+        (`nx.Graph(U_multi)`, parallel edges collapsed to one).
+    """
+    U_multi = graph.to_undirected()
+    U = nx.Graph(U_multi)
+    return U, U_multi
+
+
 def _weighted_edge_triangles(U, U_multi):
     """
     Count triangles in `U`, weighted by each side's edge multiplicity in
@@ -453,8 +503,7 @@ def calculate_structural_metrics(graph):
     in_degrees = np.array([d for _, d in graph.in_degree()])
     out_degrees = np.array([d for _, d in graph.out_degree()])
 
-    U_multi = graph.to_undirected()
-    U = nx.Graph(U_multi)
+    U, U_multi = _undirected_projection(graph)
 
     node_triangles = sum(nx.triangles(U).values()) // 3
 
@@ -467,6 +516,105 @@ def calculate_structural_metrics(graph):
         "max_out_degree": int(out_degrees.max()) if out_degrees.size else 0,
         "std_in_degree": float(in_degrees.std()) if in_degrees.size else 0.0,
         "std_out_degree": float(out_degrees.std()) if out_degrees.size else 0.0,
+    }
+
+
+def calculate_pagerank(graph):
+    """
+    Compute PageRank scores for every node in a graph.
+
+    `graph` is collapsed from a `MultiDiGraph` to a simple `DiGraph` first,
+    with each retained edge weighted by its original multiplicity (how many
+    parallel relations connected that ordered pair) -- the same "parallel
+    edges = a stronger link" treatment `calculate_spectral_distance` already
+    gives multi-edges via the (weighted) Laplacian, kept consistent here so
+    a node linked to a neighbor by several relations is treated as more
+    strongly connected to it than one linked by a single relation.
+
+    Args:
+        graph: A `networkx.MultiDiGraph`, as returned by `load_graph_tsv`.
+
+    Returns:
+        A `numpy.ndarray` of PageRank scores, one per node (order matches
+        `graph.nodes()`).
+    """
+    D = nx.DiGraph()
+    D.add_nodes_from(graph.nodes())
+    for u, v in graph.edges():
+        if D.has_edge(u, v):
+            D[u][v]["weight"] += 1
+        else:
+            D.add_edge(u, v, weight=1)
+    scores = nx.pagerank(D, weight="weight")
+    return np.array([scores[n] for n in graph.nodes()])
+
+
+def calculate_local_clustering(graph):
+    """
+    Compute the local clustering coefficient of every node in a graph.
+
+    Unlike `calculate_structural_metrics`'s `clustering_coefficient` (global
+    transitivity, `3 * triangles / wedges`, a single scalar for the whole
+    graph), this returns the full per-node distribution, so two graphs that
+    happen to share the same global transitivity but arrange their triangles
+    into very differently-shaped neighborhoods (e.g. concentrated in a few
+    dense clusters vs. spread evenly) can still be told apart.
+
+    Args:
+        graph: A `networkx.MultiDiGraph`, as returned by `load_graph_tsv`.
+
+    Returns:
+        A `numpy.ndarray` of local clustering coefficients, one per node.
+    """
+    U, _ = _undirected_projection(graph)
+    coefficients = nx.clustering(U)
+    return np.array([coefficients[n] for n in graph.nodes()])
+
+
+def calculate_distribution_divergence(values_real, values_synthetic, bins=30):
+    """
+    Compare two continuous-valued distributions via both Jensen-Shannon
+    divergence and Wasserstein distance.
+
+    This generalizes `calculate_js_divergence` (which bins on integer degree
+    values, one bin per degree, exact) to distributions like PageRank scores
+    or local clustering coefficients, which are continuous floats in
+    [0, 1] rather than small integers -- `bins` histogram bins spanning the
+    combined range of both samples are used for the JS-divergence half.
+    Wasserstein distance is computed directly from the raw samples (no
+    binning), via `scipy.stats.wasserstein_distance`, which is standard for
+    comparing degree-like distributions in the graph-generation literature
+    and, unlike a binned JS-divergence, is sensitive to *how far apart*
+    mismatched values are rather than only whether they fall in the same
+    bin.
+
+    Args:
+        values_real: 1D array-like of samples from the target graph.
+        values_synthetic: 1D array-like of samples from the graph being
+            compared against the target.
+        bins: Number of histogram bins to use for the JS-divergence half.
+
+    Returns:
+        A dict with keys `js_divergence` (float, base 2, bounded [0, 1]) and
+        `wasserstein_distance` (float, 0 means identical distributions,
+        unbounded above).
+    """
+    values_real = np.asarray(values_real, dtype=float)
+    values_synthetic = np.asarray(values_synthetic, dtype=float)
+
+    combined_min = min(values_real.min(), values_synthetic.min())
+    combined_max = max(values_real.max(), values_synthetic.max())
+    bin_edges = np.linspace(combined_min, combined_max, bins + 1)
+
+    pdf_real, _ = np.histogram(values_real, bins=bin_edges, density=True)
+    pdf_synth, _ = np.histogram(values_synthetic, bins=bin_edges, density=True)
+
+    js_distance = jensenshannon(pdf_real, pdf_synth, base=2)
+    js_divergence = js_distance**2
+
+    return {
+        "js_divergence": js_divergence,
+        "wasserstein_distance": wasserstein_distance(values_real, values_synthetic),
     }
 
 
@@ -523,6 +671,20 @@ def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=No
     structural_real = calculate_structural_metrics(real_graph)
     structural_synth = calculate_structural_metrics(synthetic_graph)
 
+    # 4. PageRank and local-clustering-coefficient distributions (both
+    # JS-divergence and Wasserstein distance)
+    pagerank_real = calculate_pagerank(real_graph)
+    pagerank_synth = calculate_pagerank(synthetic_graph)
+    pagerank_divergence = calculate_distribution_divergence(pagerank_real, pagerank_synth)
+
+    local_clustering_real = calculate_local_clustering(real_graph)
+    local_clustering_synth = calculate_local_clustering(synthetic_graph)
+    local_clustering_divergence = calculate_distribution_divergence(
+        local_clustering_real, local_clustering_synth
+    )
+    real_average_clustering = float(local_clustering_real.mean())
+    synthetic_average_clustering = float(local_clustering_synth.mean())
+
     rows = [
         ("real_nodes", real_graph.number_of_nodes()),
         ("real_edges", real_graph.number_of_edges()),
@@ -536,6 +698,7 @@ def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=No
         ("real_max_out_degree", structural_real["max_out_degree"]),
         ("real_std_in_degree", structural_real["std_in_degree"]),
         ("real_std_out_degree", structural_real["std_out_degree"]),
+        ("real_average_clustering", real_average_clustering),
         ("synthetic_nodes", synthetic_graph.number_of_nodes()),
         ("synthetic_edges", synthetic_graph.number_of_edges()),
         ("synthetic_zero_in_degree_nodes", zero_in_synth),
@@ -548,9 +711,14 @@ def topology_report(real_file, synthetic_file, output_csv, exclude_predicates=No
         ("synthetic_max_out_degree", structural_synth["max_out_degree"]),
         ("synthetic_std_in_degree", structural_synth["std_in_degree"]),
         ("synthetic_std_out_degree", structural_synth["std_out_degree"]),
+        ("synthetic_average_clustering", synthetic_average_clustering),
         ("js_divergence_in_degree", js_in),
         ("js_divergence_out_degree", js_out),
         ("js_divergence_pairs_per_predicate", js_predicates),
+        ("js_divergence_pagerank", pagerank_divergence["js_divergence"]),
+        ("wasserstein_pagerank", pagerank_divergence["wasserstein_distance"]),
+        ("js_divergence_local_clustering", local_clustering_divergence["js_divergence"]),
+        ("wasserstein_local_clustering", local_clustering_divergence["wasserstein_distance"]),
         ("spectral_distance", spectral_distance),
         ("normalized_spectral_distance", normalized_spectral_dist),
     ]

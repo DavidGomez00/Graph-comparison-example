@@ -270,9 +270,18 @@ range, and the per-relation triple budget from `relation_balance_ratio`.
 
 ## Comparing the graphs
 
-[`topology_report.py`](topology_report.py) takes the paths to a "real" and a
+Each of the scripts below takes the paths to a "real"/target and a
 "synthetic" TSV edge-list file (Source, Interaction, Target columns) and
-writes a CSV report comparing them on four axes:
+takes an `exclude_predicates` argument: any triple using one of those
+predicates is dropped before the metrics are computed. Pass `{"type"}` to
+ignore "a type b" relations, which are often irrelevant since these graphs
+only have one type. (Predicate labels are matched after stripping any URI
+namespace and normalizing camelCase/snake_case, so `{"type"}` also excludes
+e.g. `http://www.w3.org/2000/01/rdf-schema#type` -- see
+`_normalize_predicate` in `topology_report.py`.)
+
+[`topology_report.py`](topology_report.py) writes a CSV report comparing the
+two graphs on five axes:
 
 - **Spectral distance**: Euclidean distance between the sorted eigenvalues
   of each graph's (normalized) Laplacian -- sensitive to global structure
@@ -290,17 +299,41 @@ writes a CSV report comparing them on four axes:
   max/std in-/out-degree, reported side by side (real vs. synthetic) rather
   than as a single similarity score. See the module's docstring and
   `calculate_structural_metrics` for exact definitions.
+- **PageRank and local-clustering-coefficient distributions**: compared via
+  both Jensen-Shannon divergence and Wasserstein distance. PageRank checks
+  whether the two graphs create comparably realistic hub nodes; local
+  clustering coefficient is the per-node distribution behind the single
+  averaged `clustering_coefficient` scalar above, so two graphs with the
+  same global transitivity but differently-shaped neighborhoods are told
+  apart.
 
-All of the above take an `exclude_predicates` argument: any triple using one
-of those predicates is dropped before the metrics are computed. Pass
-`{"type"}` to ignore "a type b" relations, which are often irrelevant since
-these graphs only have one type.
+[`kernel_report.py`](kernel_report.py) computes the normalized
+Weisfeiler-Lehman (WL) subtree kernel similarity between the two graphs (via
+[GraKeL](https://ysig.github.io/GraKeL/)), at a few neighborhood-hop depths.
+Unlike the single-number summaries above, the WL kernel is sensitive to
+actual local neighborhood *shape*, so two graphs can match on every
+structural summary statistic while still scoring low here. 1.0 = identical
+structure, 0.0 = maximally dissimilar.
 
-Separately, [`run_amie.py`](run_amie.py) can mine Horn rules (e.g.
-`?a servantOf ?b => ?a allyOf ?b`) from either graph via AMIE3 and export
-them to CSV -- useful for inspecting a graph's logical/relational structure
-on its own, though there is currently no automated tooling in this repo for
-comparing two graphs' mined rule sets against each other.
+[`run_amie.py`](run_amie.py) mines Horn rules (e.g.
+`?a servantOf ?b => ?a allyOf ?b`) from a single graph via AMIE3 and exports
+them to CSV. [`rule_report.py`](rule_report.py) then compares two such rule
+CSVs: mined rule *patterns* are canonicalized by variable order so
+equivalent patterns compare equal regardless of AMIE's internal naming, then
+outer-joined on that canonical pattern to report shared vs. unique patterns,
+Jaccard similarity, and each side's head coverage/confidence/support side by
+side.
+
+[`graphml_export.py`](graphml_export.py) exports a graph as GraphML with
+PageRank precomputed as a node attribute, for loading into
+[Cytoscape](https://cytoscape.org/) (map node size/color to `pagerank` for a
+quick visual sanity check).
+
+[`evaluate.py`](evaluate.py) ranks multiple synthetic-generation methods
+against one target graph in a single wide table (one column per method, one
+row per metric from `topology_report.py` and `kernel_report.py`) -- e.g.
+`{"pygraft": ..., "skgg": ...}` against the French royalty target graph,
+written as both CSV and Markdown.
 
 ## Findings
 

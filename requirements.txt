@@ -24,6 +24,7 @@ cuda-bindings==13.2.0
 cuda-pathfinder==1.5.2
 cuda-toolkit==13.0.2
 cycler==0.12.1
+cython==3.3.0
 dataclasses-json==0.6.7
 debugpy==1.8.20
 decorator==5.2.1
@@ -40,6 +41,7 @@ google-api-core==2.30.3
 google-auth==2.49.2
 google-generativeai==0.3.2
 googleapis-common-protos==1.74.0
+grakel==0.1.11
 greenlet==3.5.5
 grpcio==1.80.0
 grpcio-status==1.62.3
