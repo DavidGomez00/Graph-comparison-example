@@ -19,14 +19,16 @@ small. Pass `--mins 1 --minis 1 --minhc 0` (and optionally `--minc 0
 
 # Setup
 
-**Python dependencies**: `pip install -r requirements.txt` (a full
-environment freeze, not a hand-curated project manifest -- the ones this
-repo's own scripts actually use are `networkx`, `numpy`, `scipy`, `pandas`,
-`rdflib`, `pygraft`, `grakel` (Weisfeiler-Lehman kernel, see
-`kernel_report.py`), and `matplotlib`/`seaborn` (see `plots.py`). These are
-installed in the `NeSy` pyenv virtualenv
-(`~/.pyenv/versions/NeSy/bin/python`), not the system interpreter -- run
-every script in this repo with that interpreter.
+**Python dependencies**: `pip install -r requirements.txt`, hand-curated to
+exactly what this repo's own scripts import: `networkx`, `numpy`, `scipy`,
+`pandas`, `grakel` (Weisfeiler-Lehman kernel, see `kernel_report.py`), and
+`matplotlib` (see `plots.py`). These are installed in the `NeSy` pyenv
+virtualenv (`~/.pyenv/versions/NeSy/bin/python`), not the system
+interpreter -- run every script in this repo with that interpreter.
+
+Note: `pygraft` and `rdflib` are used to *generate* the synthetic graphs
+under `.data/` (see the footgun below and the main README), not by any
+script in this repo -- they're intentionally not in requirements.txt.
 
 **Footgun**: this repo has a vendored, git-ignored `./pygraft/` source clone
 at the repo root (see `.gitignore`; obtained separately, see "AMIE/ and
