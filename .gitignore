@@ -8,13 +8,4 @@ __pycache__
 .vscode
 
 # My data
-.data
 plots/
-
-# Git repos
-AMIE/
-pygraft/
-VANILLA/
-
-# Other
-*.jar
