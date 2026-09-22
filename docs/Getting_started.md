@@ -19,11 +19,14 @@ small. Pass `--mins 1 --minis 1 --minhc 0` (and optionally `--minc 0
 
 # Setup
 
-**Python dependencies**: `networkx`, `numpy`, `pandas`, `rdflib`, `pygraft`,
-plus Jupyter to run the notebooks. There is currently no pinned
-requirements/environment file in this repo. These are installed in the
-`NeSy` pyenv virtualenv (`~/.pyenv/versions/NeSy/bin/python`), not the system
-interpreter -- run PyGraft scripts/notebooks with that interpreter.
+**Python dependencies**: `pip install -r requirements.txt` (a full
+environment freeze, not a hand-curated project manifest -- the ones this
+repo's own scripts actually use are `networkx`, `numpy`, `scipy`, `pandas`,
+`rdflib`, `pygraft`, `grakel` (Weisfeiler-Lehman kernel, see
+`kernel_report.py`), and `matplotlib`/`seaborn` (see `plots.py`). These are
+installed in the `NeSy` pyenv virtualenv
+(`~/.pyenv/versions/NeSy/bin/python`), not the system interpreter -- run
+every script in this repo with that interpreter.
 
 **Footgun**: this repo has a vendored, git-ignored `./pygraft/` source clone
 at the repo root (see `.gitignore`; obtained separately, see "AMIE/ and
@@ -45,7 +48,8 @@ git-ignored here and not checked in.
 **AMIE/ and pygraft/ directories**: these are vendored, git-ignored copies
 of the two upstream projects' full source (used for reference/local
 development, e.g. `AMIE/inference` scripts and building AMIE from source).
-They aren't required to run the notebooks and aren't included when this repo is cloned.
+They aren't required to run this repo's scripts and aren't included when
+this repo is cloned.
 Obtain them separately from [dig-team/amie](https://github.com/dig-team/amie) and
 [nicolas-hbt/pygraft](https://github.com/nicolas-hbt/pygraft) if you need
 them.
