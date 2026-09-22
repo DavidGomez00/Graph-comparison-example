@@ -12,18 +12,19 @@ Its plain-text stdout table is parsed and written out as CSV with columns:
     rule, body, head, head_coverage, std_confidence, pca_confidence,
     positive_examples, body_size, pca_body_size, functional_variable
 
-Example (matches the invocation documented for this repo's tiny Mario
-graph, see why_amie_mines_no_rules.md):
+Example (see docs/Getting_started.md and README.md for this repo's own
+worked examples):
 
-    python mine_rules.py .data/Mario/target_graph.ttl \\
-        -o .data/Mario/target_rules.csv \\
-        --mins 1 --minis 1 --minhc 0 --minc 0 --minpca 0
+    python run_amie.py .data/lung_cancer/lung_cancer.nt \\
+        -o output/lung_cancer_rules.csv
 
 With no threshold flags, AMIE's own defaults are used (-mins/-minis 100,
--minhc 0.01) which is appropriate for large knowledge bases. For small
-graphs (a handful of entities/facts) those defaults will silently yield
-zero rules -- pass --mins 1 --minis 1 --minhc 0 (and optionally --minc 0
---minpca 0 to stop AMIE from filtering rules out by confidence too).
+-minhc 0.01) which is appropriate for large knowledge bases. For small or
+logically-thin graphs those defaults will silently yield zero (or only
+trivial) rules -- pass --mins 1 --minis 1 --minhc 0 (and optionally --minc 0
+--minpca 0 to stop AMIE from filtering rules out by confidence too), then
+judge by head_coverage/positive_examples whether what comes back is real
+structure.
 """
 
 from __future__ import annotations
